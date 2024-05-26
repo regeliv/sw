@@ -12,12 +12,14 @@ Window::Window(std::string title, sf::Vector2u size)
     , is_done{false} 
 {
     create();
+    window.setFramerateLimit(120);
 }
 
 void Window::create() {
     auto style = is_fullscreen ? sf::Style::Fullscreen : sf::Style::Default;
     window.create(sf::VideoMode{window_size.x, window_size.y}, window_title,
                   style);
+
 }
 
 void Window::destroy() { window.close(); }
@@ -66,4 +68,8 @@ bool Window::isFullscreen() const {
 
 bool Window::isDone() const {
     return is_done;
+}
+
+sf::Vector2u Window::getWindowSize() const {
+    return window.getSize();
 }

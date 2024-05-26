@@ -9,14 +9,16 @@ class Window {
 
     bool isFullscreen() const;
     bool isDone() const;
+    sf::Vector2u getWindowSize() const;
 
     void toggleFullscreen();
 
     void update();
 
     void beginDraw();
-    void endDraw();
     void draw(sf::Drawable const &drawable);
+    void endDraw();
+
 
   private:
     void create();

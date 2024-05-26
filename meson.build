@@ -12,7 +12,10 @@ sfml_dep = sfml_proj.get_variable('sfml_dep')
 
 # test_src = files('test/test.cpp')
 app_src = files('src/main.cpp')
-lib_src = files('src/lib/window.cpp', 'src/lib/game.cpp')
+lib_src = files('src/lib/window.cpp',
+                'src/lib/game.cpp',
+                'src/lib/player_ship.cpp',
+                'src/lib/sprite_utils.cpp')
 
 exe = executable('spacewar', app_src + lib_src,
   install : true,

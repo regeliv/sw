@@ -16,6 +16,7 @@ int main(int argc, char **argv) {
         game.handleInput();
         game.update();
         game.render();
+        game.restartClock();
     }
     return 0;
 }
