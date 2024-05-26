@@ -1,7 +1,6 @@
-#include "SFML/Graphics/Sprite.hpp"
-#include "SFML/Graphics/Texture.hpp"
 #include "window.h"
 #include "player_ship.h"
+#include "sun.h"
 
 class Game {
   public:
@@ -21,12 +20,11 @@ class Game {
   private:
     Window window;
     bool is_ok;
-    sf::Texture sun_texture;
 
     Ship needle;
     Ship wedge;
+    Sun sun;
 
-    sf::Sprite sun;
 
     sf::Clock clock;
     sf::Time elapsed;

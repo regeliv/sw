@@ -18,7 +18,7 @@ bool Ship::isOk() const {
     return is_ok;
 }
 
-void Ship::setPosition(sf::Vector2f pos) {
+void Ship::setPosition(sf::Vector2f const& pos) {
     sprite.setPosition(pos);
 }
 

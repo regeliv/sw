@@ -7,20 +7,12 @@ Game::Game()
     : window{"Spacewar!", sf::Vector2u(800, 600)}
     , needle{"resources/needle.png"}
     , wedge{"resources/wedge.png"}
+    , sun{"resources/sun.png"}
 {
-    if (!wedge.isOk() || !needle.isOk()) {
-        is_ok = false;
+    is_ok = wedge.isOk() && needle.isOk() && sun.isOk();
+    if (!is_ok) {
         return;
     }
-
-    if (!sun_texture.loadFromFile("resources/sun.png")) {
-        is_ok = false;
-        return;
-    }
-
-    is_ok = true;
-
-    sun.setTexture(sun_texture);
 
     sf::Vector2u size = window.getWindowSize();
 
@@ -28,9 +20,8 @@ Game::Game()
     sf::Vector2f lower_left(size.x * 0.25, size.y * 0.75);
     sf::Vector2f upper_right(size.x * 0.75, size.y * 0.25);
 
-    sun.setPosition(center);
-    centerSprite(sun);
 
+    sun.setPosition(center);
     needle.setPosition(lower_left);
     wedge.setPosition(upper_right);
 }
@@ -70,11 +61,12 @@ bool Game::isOk() { return is_ok; }
 void Game::update() {
     window.update();
     handleInput();
+    sun.rotate(elapsed);
 }
 
 void Game::render() {
     window.beginDraw();
-    window.draw(sun);
+    window.draw(sun.getSprite());
     window.draw(needle.getSprite());
     window.draw(wedge.getSprite());
     window.endDraw();
