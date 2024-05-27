@@ -14,11 +14,11 @@ void centerSprite(sf::Sprite &sprite) {
 }
 
 float rightEdge(sf::Sprite const &sprite) {
-    return sprite.getPosition().x - sprite.getLocalBounds().width * 0.5;
+    return sprite.getPosition().x + sprite.getLocalBounds().width * 0.5;
 }
 
 float leftEdge(sf::Sprite const &sprite) {
-    return sprite.getPosition().x + sprite.getLocalBounds().width * 0.5;
+    return sprite.getPosition().x - sprite.getLocalBounds().width * 0.5;
 }
 
 float topEdge(sf::Sprite const &sprite) {

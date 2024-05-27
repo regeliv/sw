@@ -69,7 +69,11 @@ void Game::render() {
     window.beginDraw();
     window.draw(sun.getSprite());
     window.draw(needle.getSprite());
+    if (needle.drawWrapped()) {
+        window.draw(needle.getWrappedSprite());
+    }
     window.draw(wedge.getSprite());
+    
     window.endDraw();
 }
 

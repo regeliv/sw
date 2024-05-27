@@ -13,12 +13,52 @@ Ship::Ship(std::string const &filename) {
     }
 
     sprite.setTexture(texture);
+    wrapped_sprite.setTexture(texture);
     centerSprite(sprite);
+    centerSprite(wrapped_sprite);
 }
 
 bool Ship::isOk() const { return is_ok; }
+bool Ship::drawWrapped() const { return draw_wrapped; }
+sf::Sprite const &Ship::getSprite() const { return sprite; }
+sf::Sprite const &Ship::getWrappedSprite() const { return wrapped_sprite; }
 
 void Ship::setPosition(sf::Vector2f const &pos) { sprite.setPosition(pos); }
+
+enum Edge {
+    left = 1,
+    right = 1 << 2,
+    top = 1 << 3,
+    bottom = 1 << 4,
+};
+
+float wrap(float num, float min, float max) {
+    return (num < 0 ? max : min) + std::fmod(num - min, max - min);
+}
+
+sf::Vector2f coordsOfWrappedShip(sf::Vector2f const &pos,
+                                 sf::Vector2f const &window_size,
+                                 int overflowed_edges) {
+
+    float wrapped_x = pos.x;
+    float wrapped_y = pos.y;
+
+    if (overflowed_edges & Edge::left) {
+        wrapped_x = window_size.x + pos.x;
+    } else if (overflowed_edges & Edge::right) {
+        wrapped_x = 0 + (pos.x - window_size.x);
+    }
+
+
+    if (overflowed_edges & Edge::top) {
+        wrapped_y = window_size.y + pos.y;
+    } else if (overflowed_edges & Edge::bottom) {
+        wrapped_y = 0 + (pos.y - window_size.y);
+    }
+
+
+    return sf::Vector2f(wrapped_x, wrapped_y);
+}
 
 void Ship::move(Direction d, sf::Time t, const sf::Vector2f &window_size) {
     auto oldPos = sprite.getPosition();
@@ -44,43 +84,32 @@ void Ship::move(Direction d, sf::Time t, const sf::Vector2f &window_size) {
     }
 
     sf::Vector2f newPos{oldPos.x + delta.x, oldPos.y + delta.y};
-    if (newPos.x < 0) {
-        newPos.x = window_size.x;
-    } else if (newPos.x > window_size.x) {
-        newPos.x = 0;
-    }
-
-    if (newPos.y < 0) {
-        newPos.y = window_size.y;
-    } else if (newPos.y > window_size.y) {
-        newPos.y = 0;
-    }
-
+    newPos.x = wrap(newPos.x, 0, window_size.x);
+    newPos.y = wrap(newPos.y, 0, window_size.y);
     sprite.setPosition(newPos);
+
+    int overflowed_edges = overflowedEdges(window_size);
+    draw_wrapped = static_cast<bool>(overflowed_edges);
+    if (!draw_wrapped) {
+        return;
+    }
+
+    wrapped_sprite.setPosition(coordsOfWrappedShip(newPos, window_size, overflowed_edges));
 }
 
-sf::Sprite const &Ship::getSprite() const { return sprite; }
 
-
-bool Ship::isOverflowing(sf::Vector2f const &window_size) {
-    std::println("x: {} y: {}, w: {}, h: {}", sprite.getPosition().x,
-                 sprite.getPosition().y, window_size.x, window_size.y);
-    if (rightEdge(sprite) < 0) {
-        std::println("right edge");
-    }
-
-    if (leftEdge(sprite) > window_size.x) {
-        std::println("left edge");
+int Ship::overflowedEdges(sf::Vector2f const &window_size) {
+    int res = 0;
+    if (leftEdge(sprite) < 0) {
+        res |= Edge::left;
+    } else if (rightEdge(sprite) > window_size.x) {
+        res |= Edge::right;
     }
 
     if (topEdge(sprite) < 0) {
-        std::println("top edge");
+        res |= Edge::top;
+    } else if (bottomEdge(sprite) > window_size.y) {
+        res |= Edge::bottom;
     }
-
-    if (bottomEdge(sprite) > window_size.y) {
-        std::println("bottom edge");
-    }
-
-
-    return false;
+    return res;
 }
