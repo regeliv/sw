@@ -2,16 +2,22 @@
 #include "SFML/System/Vector2.hpp"
 #include "SFML/Window/Keyboard.hpp"
 #include "sprite_utils.h"
+#include <ranges>
 
 Game::Game()
-    : window{"Spacewar!", sf::Vector2u(800, 600)}
-    , needle{"resources/needle.png"}
-    , wedge{"resources/wedge.png"}
-    , sun{"resources/sun.png"}
-{
+    : tm{"resources"},
+      window{"Spacewar!", sf::Vector2u(800, 600)},
+      needle{"resources/needle.png"}, wedge{"resources/wedge.png"},
+      sun{"resources/sun.png"} {
     is_ok = wedge.isOk() && needle.isOk() && sun.isOk();
-    if (!is_ok) {
+
+    if (!tm.isOk()) {
+        is_ok = false;
         return;
+    }
+
+    for (int _ : std::ranges::iota_view{0, 50}) {
+        stars.push_back(Star(window.getWindowSize(), tm));
     }
 
     sf::Vector2u size = window.getWindowSize();
@@ -19,7 +25,6 @@ Game::Game()
     sf::Vector2f center(size.x * 0.5, size.y * 0.5);
     sf::Vector2f lower_left(size.x * 0.25, size.y * 0.75);
     sf::Vector2f upper_right(size.x * 0.75, size.y * 0.25);
-
 
     sun.setPosition(center);
     needle.setPosition(lower_left);
@@ -65,11 +70,18 @@ void Game::update() {
     window.update();
     handleInput();
     sun.rotate(elapsed);
+    for (Star &star : stars) {
+        star.twinkle(elapsed);
+    }
 }
 
 void Game::render() {
     window.beginDraw();
     window.draw(sun.getSprite());
+    for (Star const &star : stars) {
+        window.draw(star.getSprite());
+    }
+
     window.draw(needle.getSprite());
     if (needle.drawCompl()) {
         window.draw(needle.getComplSprite());
@@ -78,7 +90,7 @@ void Game::render() {
     if (wedge.drawCompl()) {
         window.draw(wedge.getComplSprite());
     }
-    
+
     window.endDraw();
 }
 

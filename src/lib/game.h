@@ -1,6 +1,8 @@
-#include "window.h"
 #include "player_ship.h"
+#include "star.h"
 #include "sun.h"
+#include "window.h"
+#include <vector>
 
 class Game {
   public:
@@ -18,13 +20,14 @@ class Game {
     bool isOk();
 
   private:
+    TextureManager tm;
     Window window;
     bool is_ok;
 
     Ship needle;
     Ship wedge;
     Sun sun;
-
+    std::vector<Star> stars;
 
     sf::Clock clock;
     sf::Time elapsed;

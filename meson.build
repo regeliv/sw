@@ -16,6 +16,8 @@ lib_src = files('src/lib/window.cpp',
                 'src/lib/game.cpp',
                 'src/lib/player_ship.cpp',
                 'src/lib/sun.cpp',
+                'src/lib/star.cpp',
+                'src/lib/texture_manager.cpp',
                 'src/lib/sprite_utils.cpp')
 
 exe = executable('spacewar', app_src + lib_src,
