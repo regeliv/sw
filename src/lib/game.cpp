@@ -29,28 +29,29 @@ Game::Game()
 Game::~Game() {}
 
 void Game::handleInput() {
+    auto window_size = window.getViewSize();
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-        needle.move(Direction::up, elapsed);
+        needle.move(Direction::up, elapsed, window_size);
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-        needle.move(Direction::down, elapsed);
+        needle.move(Direction::down, elapsed, window_size);
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-        needle.move(Direction::left, elapsed);
+        needle.move(Direction::left, elapsed, window_size);
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-        needle.move(Direction::right, elapsed);
+        needle.move(Direction::right, elapsed, window_size);
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-        wedge.move(Direction::up, elapsed);
+        wedge.move(Direction::up, elapsed, window_size);
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-        wedge.move(Direction::down, elapsed);
+        wedge.move(Direction::down, elapsed, window_size);
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-        wedge.move(Direction::left, elapsed);
+        wedge.move(Direction::left, elapsed, window_size);
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-        wedge.move(Direction::right, elapsed);
+        wedge.move(Direction::right, elapsed, window_size);
     }
 }
 

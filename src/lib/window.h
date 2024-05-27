@@ -10,6 +10,7 @@ class Window {
     bool isFullscreen() const;
     bool isDone() const;
     sf::Vector2u getWindowSize() const;
+    sf::Vector2f getViewSize() const;
 
     void toggleFullscreen();
 

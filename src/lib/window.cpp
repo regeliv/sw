@@ -7,19 +7,16 @@
 #include "SFML/Window/WindowStyle.hpp"
 
 Window::Window(std::string title, sf::Vector2u size)
-    : window_size{std::move(size)}, window_title{std::move(title)}
-    , is_fullscreen{false}
-    , is_done{false} 
-{
+    : window_size{std::move(size)}, window_title{std::move(title)},
+      is_fullscreen{false}, is_done{false} {
     create();
-    window.setFramerateLimit(120);
+    window.setVerticalSyncEnabled(true);
 }
 
 void Window::create() {
     auto style = is_fullscreen ? sf::Style::Fullscreen : sf::Style::Default;
     window.create(sf::VideoMode{window_size.x, window_size.y}, window_title,
                   style);
-
 }
 
 void Window::destroy() { window.close(); }
@@ -44,32 +41,21 @@ void Window::update() {
                 toggleFullscreen();
             }
             break;
-        default:
+        case sf::Event::Resized:
             break;
         }
     }
 }
 
-void Window::beginDraw() {
-    window.clear();
-}
+void Window::beginDraw() { window.clear(); }
 
-void Window::endDraw() {
-    window.display();
-}
+void Window::endDraw() { window.display(); }
 
-void Window::draw(sf::Drawable const& drawable) {
-    window.draw(drawable);
-}
+void Window::draw(sf::Drawable const &drawable) { window.draw(drawable); }
 
-bool Window::isFullscreen() const {
-    return is_fullscreen;
-}
+bool Window::isFullscreen() const { return is_fullscreen; }
 
-bool Window::isDone() const {
-    return is_done;
-}
+bool Window::isDone() const { return is_done; }
 
-sf::Vector2u Window::getWindowSize() const {
-    return window.getSize();
-}
+sf::Vector2u Window::getWindowSize() const { return window.getSize(); }
+sf::Vector2f Window::getViewSize() const { return window.getView().getSize(); }
