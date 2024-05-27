@@ -37,9 +37,11 @@ void Game::handleInput() {
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-        needle.move(Direction::left, elapsed, window_size);
+        // needle.move(Direction::left, elapsed, window_size);
+        needle.rotate(RotateDirection::counterclockwise, elapsed);
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-        needle.move(Direction::right, elapsed, window_size);
+        needle.rotate(RotateDirection::clockwise, elapsed);
+        // needle.move(Direction::right, elapsed, window_size);
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
@@ -49,9 +51,9 @@ void Game::handleInput() {
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-        wedge.move(Direction::left, elapsed, window_size);
+        wedge.rotate(RotateDirection::counterclockwise, elapsed);
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-        wedge.move(Direction::right, elapsed, window_size);
+        wedge.rotate(RotateDirection::clockwise, elapsed);
     }
 }
 
@@ -69,10 +71,13 @@ void Game::render() {
     window.beginDraw();
     window.draw(sun.getSprite());
     window.draw(needle.getSprite());
-    if (needle.drawWrapped()) {
-        window.draw(needle.getWrappedSprite());
+    if (needle.drawCompl()) {
+        window.draw(needle.getComplSprite());
     }
     window.draw(wedge.getSprite());
+    if (wedge.drawCompl()) {
+        window.draw(wedge.getComplSprite());
+    }
     
     window.endDraw();
 }
