@@ -1,8 +1,8 @@
+#pragma once
 #include "SFML/Graphics/Sprite.hpp"
-#include "SFML/Graphics/Texture.hpp"
 #include "SFML/System/Time.hpp"
 #include "SFML/System/Vector2.hpp"
-#include "texture_manager.hpp"
+#include "texture_manager.h"
 
 class Star {
   public:

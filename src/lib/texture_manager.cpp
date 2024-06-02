@@ -1,4 +1,4 @@
-#include "texture_manager.hpp"
+#include "texture_manager.h"
 #include <filesystem>
 #include <print>
 
@@ -15,6 +15,7 @@ TextureManager::TextureManager(std::string const &resource_dir) {
             textures[name] = sf::Texture();
             is_ok = textures[name].loadFromFile(file);
             if (!is_ok) {
+                std::println("Failed to load {}", entry.path().string());
                 return;
             }
         }

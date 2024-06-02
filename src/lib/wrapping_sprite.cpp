@@ -1,10 +1,20 @@
 #include "wrapping_sprite.h"
+#include "SFML/Graphics/RenderTarget.hpp"
 #include "SFML/Graphics/Texture.hpp"
-#include <cmath>
 #include "sprite_utils.h"
+#include <cmath>
 
-std::vector<sf::Sprite> const& WrappingSprite::getSprites() {
-    return sprites;
+WrappingSprite::WrappingSprite(TextureManager &tm,
+                               std::string const &texture_name)
+    : texture{tm.getTexture(texture_name)} {}
+
+std::vector<sf::Sprite> const &WrappingSprite::getSprites() { return sprites; }
+
+void WrappingSprite::draw(sf::RenderTarget &target,
+                          sf::RenderStates states) const {
+    for (auto const &sprite : sprites) {
+        target.draw(sprite);
+    }
 }
 
 int WrappingSprite::overflowing(sf::Vector2f const &window_size) {

@@ -7,11 +7,12 @@
 Game::Game()
     : tm{"resources"},
       window{"Spacewar!", sf::Vector2u(800, 600)},
-      needle{"resources/needle.png"}, wedge{"resources/wedge.png"},
+      needle{tm, "needle"}, wedge{tm, "wedge"},
       sun{"resources/sun.png"} {
-    is_ok = wedge.isOk() && needle.isOk() && sun.isOk();
 
-    if (!tm.isOk()) {
+    is_ok = true;
+
+    if (!tm.isOk() || !sun.isOk()) {
         is_ok = false;
         return;
     }
@@ -38,6 +39,9 @@ void Game::handleInput() {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
         needle.increaseVelocity(elapsed);
 
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+        needle.shoot();
+
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
         needle.rotate(RotateDirection::counterclockwise, elapsed);
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
@@ -62,8 +66,8 @@ void Game::update() {
     window.update();
 
     auto window_size = window.getViewSize();
-    needle.move(elapsed, window_size);
-    wedge.move(elapsed, window_size);
+    needle.update(elapsed, window_size);
+    wedge.update(elapsed, window_size);
 
     handleInput();
     sun.rotate(elapsed);
@@ -80,13 +84,8 @@ void Game::render() {
         window.draw(star.getSprite());
     }
 
-    for (auto const& sprite: needle.getSprites()) {
-        window.draw(sprite);
-    }
-
-    for (auto const& sprite: wedge.getSprites()) {
-        window.draw(sprite);
-    }
+    window.draw(needle);
+    window.draw(wedge);
 
     window.endDraw();
 }

@@ -1,8 +1,9 @@
-#include "SFML/Graphics/Sprite.hpp"
-#include "SFML/Graphics/Texture.hpp"
+#pragma once
 #include "SFML/System/Time.hpp"
 #include "SFML/System/Vector2.hpp"
 #include "SFML/System/Vector3.hpp"
+#include "src/lib/projectile.h"
+#include "src/lib/texture_manager.h"
 #include "wrapping_sprite.h"
 
 enum class Direction {
@@ -17,22 +18,23 @@ enum RotateDirection {
 
 class Ship : public WrappingSprite {
   public:
-    Ship(std::string const &filename);
-    bool isOk() const;
+    Ship(TextureManager &tm, std::string const &filename);
 
     void setPosition(sf::Vector2f const &pos);
 
-    void move(sf::Time t, sf::Vector2f const &window_size);
+    void update(sf::Time t, sf::Vector2f const &window_size);
     void increaseVelocity(sf::Time t);
     void rotate(RotateDirection r, sf::Time t);
+    void shoot();
 
-  private:
-    // int overflowedEdges(sf::Vector2f const &window_size);
-    // bool isOverflowing(sf::Vector2f const &window_size);
+    void draw(sf::RenderTarget &target, sf::RenderStates states) const;
 
-    sf::Vector3f sunForceParams(sf::Vector2f const &window_size);
+      private:
+        std::vector<Projectile> projectiles{};
 
-    bool is_ok;
+        sf::Vector3f sunForceParams(sf::Vector2f const &window_size);
 
-    sf::Vector2f velocity;
-};
+        sf::Vector2f velocity;
+
+        TextureManager & tm;
+    };

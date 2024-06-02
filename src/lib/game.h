@@ -1,3 +1,4 @@
+#pragma once
 #include "player_ship.h"
 #include "star.h"
 #include "sun.h"

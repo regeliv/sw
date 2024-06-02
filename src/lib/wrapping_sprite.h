@@ -1,9 +1,9 @@
+#pragma once
+#include "SFML/Graphics/Drawable.hpp"
 #include "SFML/Graphics/Sprite.hpp"
 #include "SFML/Graphics/Texture.hpp"
-#include "SFML/System/Time.hpp"
 #include "SFML/System/Vector2.hpp"
-#include "SFML/System/Vector3.hpp"
-#include <optional>
+#include "src/lib/texture_manager.h"
 #include <vector>
 
 enum Edge {
@@ -13,15 +13,18 @@ enum Edge {
     bottom = 1 << 4,
 };
 
-class WrappingSprite {
+class WrappingSprite : public sf::Drawable {
   public:
+    WrappingSprite(TextureManager &tm, std::string const& texture_filename);
     void wrapIfNecessary(sf::Vector2f const& window_size);
     std::vector<sf::Sprite> const& getSprites();
+
+    virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;    
 
   protected:
     int overflowing(sf::Vector2f const& window_size);
     sf::Vector2f wrappedSpriteCoords(sf::Vector2f const& window_size, int overflowing_edges);
     void addTexture(sf::Vector2f const& pos);
     std::vector<sf::Sprite> sprites;
-    sf::Texture texture;
+    sf::Texture& texture;
 };

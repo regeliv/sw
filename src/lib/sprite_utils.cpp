@@ -1,6 +1,7 @@
 #include "sprite_utils.h"
 #include "SFML/Graphics/Texture.hpp"
 #include "SFML/System/Vector2.hpp"
+#include <cmath>
 
 void centerSprite(sf::Sprite &sprite) {
     auto texture = sprite.getTexture();
@@ -29,3 +30,6 @@ float bottomEdge(sf::Sprite const &sprite) {
     return sprite.getPosition().y + sprite.getLocalBounds().height * 0.5;
 }
 
+float wrap(float num, float min, float max) {
+    return (num < 0 ? max : min) + std::fmod(num - min, max - min);
+}
