@@ -12,8 +12,8 @@ TextureManager::TextureManager(std::string const &resource_dir) {
             auto name = entry.path().stem().string();
             auto file = entry.path().relative_path().string();
 
-            textures[name] = sf::Texture();
-            is_ok = textures[name].loadFromFile(file);
+            textures[name] = std::make_shared<sf::Texture>();
+            is_ok = textures[name]->loadFromFile(file);
             if (!is_ok) {
                 std::println("Failed to load {}", entry.path().string());
                 return;
@@ -22,7 +22,7 @@ TextureManager::TextureManager(std::string const &resource_dir) {
     }
 }
 
-sf::Texture& TextureManager::getTexture(std::string const& name) {
+std::shared_ptr<sf::Texture> TextureManager::getTexture(std::string const& name) {
     return textures[name];
 }
 

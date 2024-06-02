@@ -1,7 +1,6 @@
 #include "game.h"
 #include "SFML/System/Vector2.hpp"
 #include "SFML/Window/Keyboard.hpp"
-#include "sprite_utils.h"
 #include <ranges>
 
 Game::Game()
@@ -50,6 +49,9 @@ void Game::handleInput() {
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) 
         wedge.increaseVelocity(elapsed);
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+        needle.shoot();
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
         wedge.rotate(RotateDirection::counterclockwise, elapsed);

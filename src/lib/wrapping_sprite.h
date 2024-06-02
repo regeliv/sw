@@ -4,6 +4,7 @@
 #include "SFML/Graphics/Texture.hpp"
 #include "SFML/System/Vector2.hpp"
 #include "src/lib/texture_manager.h"
+#include <memory>
 #include <vector>
 
 enum Edge {
@@ -16,6 +17,7 @@ enum Edge {
 class WrappingSprite : public sf::Drawable {
   public:
     WrappingSprite(TextureManager &tm, std::string const& texture_filename);
+
     void wrapIfNecessary(sf::Vector2f const& window_size);
     std::vector<sf::Sprite> const& getSprites();
 
@@ -26,5 +28,5 @@ class WrappingSprite : public sf::Drawable {
     sf::Vector2f wrappedSpriteCoords(sf::Vector2f const& window_size, int overflowing_edges);
     void addTexture(sf::Vector2f const& pos);
     std::vector<sf::Sprite> sprites;
-    sf::Texture& texture;
+    std::shared_ptr<sf::Texture> texture;
 };

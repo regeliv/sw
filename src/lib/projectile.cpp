@@ -7,7 +7,7 @@ Projectile::Projectile(TextureManager &tm, sf::Vector2f velocity,
                        sf::Vector2f pos)
     : WrappingSprite(tm, "projectile"), velocity{velocity} {
 
-    sprites.emplace_back(texture);
+    sprites.emplace_back(*texture);
     centerSprite(sprites[0]);
     sprites[0].setPosition(pos);
 }

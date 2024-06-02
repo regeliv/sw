@@ -21,7 +21,7 @@ Star::Star(sf::Vector2u window_size, TextureManager &tm) : speed{2} {
 
     int n = file_dist(rng);
 
-    sprite.setTexture(tm.getTexture(std::format("star-{}", n)));
+    sprite.setTexture(*tm.getTexture(std::format("star-{}", n)));
 
     float x, y;
     sf::Vector2f center(window_size.x * 0.5, window_size.y * 0.5);

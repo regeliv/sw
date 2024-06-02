@@ -29,12 +29,13 @@ class Ship : public WrappingSprite {
 
     void draw(sf::RenderTarget &target, sf::RenderStates states) const;
 
-      private:
-        std::vector<Projectile> projectiles{};
+  private:
+    std::vector<Projectile> projectiles{};
 
-        sf::Vector3f sunForceParams(sf::Vector2f const &window_size);
+    sf::Vector3f sunForceParams(sf::Vector2f const &window_size);
+    void updateProjectiles(sf::Time t, sf::Vector2f);
 
-        sf::Vector2f velocity;
+    sf::Vector2f velocity;
 
-        TextureManager & tm;
-    };
+    TextureManager &tm;
+};

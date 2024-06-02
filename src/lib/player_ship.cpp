@@ -8,10 +8,11 @@
 #include "src/lib/wrapping_sprite.h"
 #include <cmath>
 #include <print>
+#include <vector>
 
 
 Ship::Ship(TextureManager &tm, std::string const &name) : WrappingSprite(tm, name), tm{tm} {
-    sprites.emplace_back(texture);
+    sprites.emplace_back(*texture);
     centerSprite(sprites[0]);
 }
 
@@ -76,7 +77,16 @@ void Ship::shoot() {
     proj_coords.y += std::sin(angle) * dist_from_center;
 
     
-    projectiles.push_back(Projectile(tm, {velocity.x + 10 * std::cos(angle), velocity.y + 10 * std::sin(angle)}, proj_coords));
+    projectiles.push_back(Projectile(tm, {velocity.x + 20 * std::cos(angle), velocity.y + 20 * std::sin(angle)}, proj_coords));
+}
+
+void Ship::updateProjectiles(sf::Time t, sf::Vector2f window_size) {
+    std::erase_if(projectiles, [&](Projectile& p) { return p.lifetimeEnded(); });
+    
+    for (auto & projectile : projectiles) {
+        projectile.update(t, window_size);
+    }
+       
 }
 
 void Ship::update(sf::Time t, sf::Vector2f const &window_size) {
@@ -101,9 +111,7 @@ void Ship::update(sf::Time t, sf::Vector2f const &window_size) {
     newPos.y = wrap(newPos.y, 0, window_size.y);
     sprites[0].setPosition(newPos);
 
-    for (auto & projectile : projectiles) {
-        projectile.update(t, window_size);
-    }
+    updateProjectiles(t, window_size);
 
     wrapIfNecessary(window_size);
 }

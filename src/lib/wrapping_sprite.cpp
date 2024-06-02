@@ -86,7 +86,8 @@ void WrappingSprite::wrapIfNecessary(sf::Vector2f const &window_size) {
 }
 
 void WrappingSprite::addTexture(sf::Vector2f const &pos) {
-    sprites.emplace_back(texture);
+    sprites.emplace_back(*texture);
     centerSprite(sprites[1]);
+    sprites[1].setPosition(pos);
     sprites[1].setRotation(sprites[0].getRotation());
 }
