@@ -1,5 +1,6 @@
 #include "player_ship.h"
 #include "SFML/System/Vector2.hpp"
+#include "SFML/System/Vector3.hpp"
 #include "sprite_utils.h"
 #include <cmath>
 #include <print>
@@ -59,25 +60,53 @@ sf::Vector2f coordsOfWrappedShip(sf::Vector2f const &pos,
     return sf::Vector2f(wrapped_x, wrapped_y);
 }
 
-void Ship::move(Direction d, sf::Time t, const sf::Vector2f &window_size) {
-    auto oldPos = sprite.getPosition();
+void Ship::increaseVelocity(sf::Time t) {
     // by default the angle is 0 so the sprite is pointed to the right
     // at start
     // we adjust it by subtracting 90 degrees, so that it is pointing
     // to the top
     float angle = (sprite.getRotation() - 90) * (std::numbers::pi / 180);
+    float secs = t.asSeconds();
+
+    constexpr int incr = 2;
+
+    velocity.x += incr * std::cos(angle) * secs;
+    velocity.y += incr * std::sin(angle) * secs;
+
+}
+
+sf::Vector3f Ship::sunForceParams(sf::Vector2f const &window_size) {
+    sf::Vector2f sun_pos {window_size.x / 2 , window_size.y / 2};
+    sf::Vector2f ship_pos = sprite.getPosition();
+    float dist = std::sqrt(std::pow(sun_pos.x - ship_pos.x, 2) +
+                            std::pow(sun_pos.y - ship_pos.y, 2));
+
+
+    float hypot = dist * dist;
+    float cosine = (sun_pos.x - ship_pos.x) / hypot;
+    float sine = (sun_pos.y - ship_pos.y) / hypot;
+    
+
+    return sf::Vector3f { hypot, cosine, sine };
+
+}
+
+
+void Ship::move(sf::Time t, sf::Vector2f const &window_size) {
+    auto oldPos = sprite.getPosition();
+
+    float angle = (sprite.getRotation() - 90) * (std::numbers::pi / 180);
     sf::Vector2f delta{};
     float secs = t.asSeconds();
-    switch (d) {
-    case Direction::up:
-        delta.x = inc * secs * std::cos(angle);
-        delta.y = inc * secs * std::sin(angle);
-        break;
-    case Direction::down:
-        // delta.x = -inc * secs * std::cos(angle);
-        // delta.y = -inc * secs * std::sin(angle);
-        break;
-    }
+
+    delta.x = velocity.x * secs; // inc * secs * std::cos(angle);
+    delta.y = velocity.y * secs; //inc * secs * std::sin(angle);
+
+    sf::Vector3f force_params = sunForceParams(window_size);
+
+    constexpr float G = 50000;
+    velocity.x += G / force_params.x * force_params.y;
+    velocity.y += G / force_params.x * force_params.z;
 
     sf::Vector2f newPos{oldPos.x + delta.x, oldPos.y + delta.y};
     newPos.x = wrap(newPos.x, 0, window_size.x);

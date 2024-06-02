@@ -35,25 +35,17 @@ Game::~Game() {}
 
 void Game::handleInput() {
     auto window_size = window.getViewSize();
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-        needle.move(Direction::up, elapsed, window_size);
-    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-        needle.move(Direction::down, elapsed, window_size);
-    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+        needle.increaseVelocity(elapsed);
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-        // needle.move(Direction::left, elapsed, window_size);
         needle.rotate(RotateDirection::counterclockwise, elapsed);
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
         needle.rotate(RotateDirection::clockwise, elapsed);
-        // needle.move(Direction::right, elapsed, window_size);
     }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-        wedge.move(Direction::up, elapsed, window_size);
-    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-        wedge.move(Direction::down, elapsed, window_size);
-    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) 
+        wedge.increaseVelocity(elapsed);
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
         wedge.rotate(RotateDirection::counterclockwise, elapsed);
@@ -68,6 +60,11 @@ bool Game::isOk() { return is_ok; }
 
 void Game::update() {
     window.update();
+
+    auto window_size = window.getViewSize();
+    needle.move(elapsed, window_size);
+    wedge.move(elapsed, window_size);
+
     handleInput();
     sun.rotate(elapsed);
     for (Star &star : stars) {
