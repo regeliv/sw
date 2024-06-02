@@ -34,6 +34,7 @@ class Ship : public WrappingSprite {
 
     sf::Vector3f sunForceParams(sf::Vector2f const &window_size);
     void updateProjectiles(sf::Time t, sf::Vector2f);
+    float cooldown = 0; 
 
     sf::Vector2f velocity;
 

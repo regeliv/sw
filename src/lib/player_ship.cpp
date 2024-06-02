@@ -65,7 +65,7 @@ sf::Vector3f Ship::sunForceParams(sf::Vector2f const &window_size) {
 }
 
 void Ship::shoot() {
-    if (sprites.size() < 1) {
+    if (sprites.size() < 1 || cooldown > 0) {
         return;
     }
 
@@ -78,6 +78,7 @@ void Ship::shoot() {
 
     
     projectiles.push_back(Projectile(tm, {velocity.x + 20 * std::cos(angle), velocity.y + 20 * std::sin(angle)}, proj_coords));
+    cooldown = 1;
 }
 
 void Ship::updateProjectiles(sf::Time t, sf::Vector2f window_size) {
@@ -87,6 +88,7 @@ void Ship::updateProjectiles(sf::Time t, sf::Vector2f window_size) {
         projectile.update(t, window_size);
     }
        
+    cooldown -= t.asSeconds();
 }
 
 void Ship::update(sf::Time t, sf::Vector2f const &window_size) {
