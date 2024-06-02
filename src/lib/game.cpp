@@ -75,17 +75,17 @@ void Game::update() {
 void Game::render() {
     window.beginDraw();
     window.draw(sun.getSprite());
+
     for (Star const &star : stars) {
         window.draw(star.getSprite());
     }
 
-    window.draw(needle.getSprite());
-    if (needle.drawCompl()) {
-        window.draw(needle.getComplSprite());
+    for (auto const& sprite: needle.getSprites()) {
+        window.draw(sprite);
     }
-    window.draw(wedge.getSprite());
-    if (wedge.drawCompl()) {
-        window.draw(wedge.getComplSprite());
+
+    for (auto const& sprite: wedge.getSprites()) {
+        window.draw(sprite);
     }
 
     window.endDraw();

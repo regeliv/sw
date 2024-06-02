@@ -3,6 +3,10 @@
 #include <cmath>
 #include "sprite_utils.h"
 
+std::vector<sf::Sprite> const& WrappingSprite::getSprites() {
+    return sprites;
+}
+
 int WrappingSprite::overflowing(sf::Vector2f const &window_size) {
     if (sprites.size() < 1) {
         return 0;
@@ -74,4 +78,5 @@ void WrappingSprite::wrapIfNecessary(sf::Vector2f const &window_size) {
 void WrappingSprite::addTexture(sf::Vector2f const &pos) {
     sprites.emplace_back(texture);
     centerSprite(sprites[1]);
+    sprites[1].setRotation(sprites[0].getRotation());
 }

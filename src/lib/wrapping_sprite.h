@@ -16,8 +16,9 @@ enum Edge {
 class WrappingSprite {
   public:
     void wrapIfNecessary(sf::Vector2f const& window_size);
+    std::vector<sf::Sprite> const& getSprites();
 
-  private:
+  protected:
     int overflowing(sf::Vector2f const& window_size);
     sf::Vector2f wrappedSpriteCoords(sf::Vector2f const& window_size, int overflowing_edges);
     void addTexture(sf::Vector2f const& pos);

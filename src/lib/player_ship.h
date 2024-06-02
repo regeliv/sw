@@ -3,23 +3,22 @@
 #include "SFML/System/Time.hpp"
 #include "SFML/System/Vector2.hpp"
 #include "SFML/System/Vector3.hpp"
+#include "wrapping_sprite.h"
+
 enum class Direction {
     up,
     down,
 };
 
 enum RotateDirection {
-  clockwise = 1,
-  counterclockwise = -1,
+    clockwise = 1,
+    counterclockwise = -1,
 };
 
-class Ship {
+class Ship : public WrappingSprite {
   public:
     Ship(std::string const &filename);
     bool isOk() const;
-    bool drawCompl() const;
-    sf::Sprite const &getSprite() const;
-    sf::Sprite const &getComplSprite() const;
 
     void setPosition(sf::Vector2f const &pos);
 
@@ -28,17 +27,12 @@ class Ship {
     void rotate(RotateDirection r, sf::Time t);
 
   private:
-    int overflowedEdges(sf::Vector2f const &window_size);
-    bool isOverflowing(sf::Vector2f const &window_size);
+    // int overflowedEdges(sf::Vector2f const &window_size);
+    // bool isOverflowing(sf::Vector2f const &window_size);
 
     sf::Vector3f sunForceParams(sf::Vector2f const &window_size);
-    
-    bool draw_compl;
-    bool is_ok;
-    
-    sf::Vector2f velocity;
 
-    sf::Texture texture;
-    sf::Sprite sprite;
-    sf::Sprite compl_sprite;
+    bool is_ok;
+
+    sf::Vector2f velocity;
 };
