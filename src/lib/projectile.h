@@ -12,6 +12,6 @@ class Projectile : public WrappingSprite {
 
   public:
     bool lifetimeEnded();
-    Projectile(TextureManager &tm, sf::Vector2f velocity, sf::Vector2f pos);
+    Projectile(TextureManager &tm, sf::Vector2f velocity, sf::Vector2f pos, float angle);
     void update(sf::Time t, sf::Vector2f const& window_size);
 };

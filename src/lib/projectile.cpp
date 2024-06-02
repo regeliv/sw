@@ -4,12 +4,13 @@
 #include "src/lib/texture_manager.h"
 
 Projectile::Projectile(TextureManager &tm, sf::Vector2f velocity,
-                       sf::Vector2f pos)
+                       sf::Vector2f pos, float angle)
     : WrappingSprite(tm, "projectile"), velocity{velocity} {
 
     sprites.emplace_back(*texture);
     centerSprite(sprites[0]);
     sprites[0].setPosition(pos);
+    sprites[0].setRotation(angle);
 }
 
 void Projectile::move(sf::Time t, sf::Vector2f const &window_size) {

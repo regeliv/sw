@@ -10,12 +10,11 @@
 #include <print>
 #include <vector>
 
-
-Ship::Ship(TextureManager &tm, std::string const &name) : WrappingSprite(tm, name), tm{tm} {
+Ship::Ship(TextureManager &tm, std::string const &name)
+    : WrappingSprite(tm, name), tm{tm} {
     sprites.emplace_back(*texture);
     centerSprite(sprites[0]);
 }
-
 
 void Ship::setPosition(sf::Vector2f const &pos) {
     if (sprites.size() > 0) {
@@ -23,9 +22,7 @@ void Ship::setPosition(sf::Vector2f const &pos) {
     }
 }
 
-
-void Ship::draw(sf::RenderTarget &target,
-                          sf::RenderStates states) const {
+void Ship::draw(sf::RenderTarget &target, sf::RenderStates states) const {
     WrappingSprite::draw(target, states);
 
     for (auto const &projectile : projectiles) {
@@ -69,25 +66,28 @@ void Ship::shoot() {
         return;
     }
 
-    sf::Vector2f proj_coords = sprites[0].getPosition();    
-    float dist_from_center = sprites[0].getTextureRect().height / 2;
+    sf::Vector2f proj_coords = sprites[0].getPosition();
+    float dist_from_center = sprites[0].getTextureRect().height / 2.0;
     float angle = (sprites[0].getRotation() - 90) * (std::numbers::pi / 180);
 
     proj_coords.x += std::cos(angle) * dist_from_center;
     proj_coords.y += std::sin(angle) * dist_from_center;
 
-    
-    projectiles.push_back(Projectile(tm, {velocity.x + 20 * std::cos(angle), velocity.y + 20 * std::sin(angle)}, proj_coords));
+    projectiles.push_back(Projectile(
+        tm,
+        {velocity.x + 40 * std::cos(angle), velocity.y + 40 * std::sin(angle)},
+        proj_coords, sprites[0].getRotation()));
     cooldown = 1;
 }
 
 void Ship::updateProjectiles(sf::Time t, sf::Vector2f window_size) {
-    std::erase_if(projectiles, [&](Projectile& p) { return p.lifetimeEnded(); });
-    
-    for (auto & projectile : projectiles) {
+    std::erase_if(projectiles,
+                  [&](Projectile &p) { return p.lifetimeEnded(); });
+
+    for (auto &projectile : projectiles) {
         projectile.update(t, window_size);
     }
-       
+
     cooldown -= t.asSeconds();
 }
 
