@@ -19,7 +19,7 @@ class WrappingSprite : public sf::Drawable {
     WrappingSprite(TextureManager &tm, std::string const& texture_filename);
 
     void wrapIfNecessary(sf::Vector2f const& window_size);
-    std::vector<sf::Sprite> const& getSprites();
+    std::vector<sf::Sprite> const& getSprites() const;
 
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;    
 

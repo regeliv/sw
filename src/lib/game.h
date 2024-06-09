@@ -21,6 +21,8 @@ class Game {
     bool isOk();
 
   private:
+    void handleCollisions();
+    
     TextureManager tm;
     Window window;
     bool is_ok;

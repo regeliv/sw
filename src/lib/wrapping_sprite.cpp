@@ -8,7 +8,7 @@ WrappingSprite::WrappingSprite(TextureManager &tm,
                                std::string const &texture_name)
     : texture{tm.getTexture(texture_name)} {}
 
-std::vector<sf::Sprite> const &WrappingSprite::getSprites() { return sprites; }
+std::vector<sf::Sprite> const &WrappingSprite::getSprites() const { return sprites; }
 
 void WrappingSprite::draw(sf::RenderTarget &target,
                           sf::RenderStates states) const {

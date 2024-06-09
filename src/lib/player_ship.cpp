@@ -18,9 +18,10 @@ Ship::Ship(TextureManager &tm, std::string const &name)
     centerSprite(sprites[0]);
 }
 
-void Ship::setPosition(sf::Vector2f const &pos) {
+void Ship::setPosition(sf::Vector2f const &pos, float angle) {
     if (!sprites.empty()) {
-        sprites[0].setPosition(pos);
+        sprites.front().setPosition(pos);
+        sprites.front().setRotation(angle);
     }
 }
 
@@ -30,6 +31,10 @@ void Ship::draw(sf::RenderTarget &target, sf::RenderStates states) const {
     for (auto const &projectile : projectiles) {
         target.draw(projectile);
     }
+}
+
+std::vector<Projectile> const &Ship::getProjectiles() const {
+    return projectiles;
 }
 
 void Ship::increaseVelocity(sf::Time t) {
@@ -142,4 +147,45 @@ void Ship::rotate(RotateDirection r, sf::Time t) {
     if (sprites.size() > 1) {
         sprites[1].setRotation(sprites[0].getRotation());
     }
+}
+
+bool Ship::hitBy(Ship const &ship) const {
+    auto &projectiles = ship.getProjectiles();
+
+    for (auto const &sprite : sprites) {
+        for (auto const &projectile : projectiles) {
+            for (auto const &projectile_sprite : projectile.getSprites()) {
+                if (projectile_sprite.getGlobalBounds().intersects(
+                        sprite.getGlobalBounds())) {
+                    return true;
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
+bool Ship::inSun(Sun const &sun) const {
+    for (auto const &sprite : sprites) {
+        if (sprite.getGlobalBounds().intersects(
+                sun.getSprite().getGlobalBounds())) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool Ship::collided(Ship const &ship) const {
+    for (auto const &sprite : sprites) {
+        for (auto const &other_sprite : ship.getSprites()) {
+            if (sprite.getGlobalBounds().intersects(
+                    other_sprite.getGlobalBounds())) {
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
