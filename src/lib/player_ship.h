@@ -38,5 +38,8 @@ class Ship : public WrappingSprite {
 
     sf::Vector2f velocity;
 
+    std::shared_ptr<sf::Texture> alt_texture;
+    bool is_boosting;
+
     TextureManager &tm;
 };

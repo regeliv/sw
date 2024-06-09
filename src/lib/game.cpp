@@ -34,7 +34,6 @@ Game::Game()
 Game::~Game() {}
 
 void Game::handleInput() {
-    auto window_size = window.getViewSize();
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
         needle.increaseVelocity(elapsed);
 
@@ -51,7 +50,7 @@ void Game::handleInput() {
         wedge.increaseVelocity(elapsed);
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-        needle.shoot();
+        wedge.shoot();
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
         wedge.rotate(RotateDirection::counterclockwise, elapsed);

@@ -7,17 +7,19 @@
 #include "src/lib/texture_manager.h"
 #include "src/lib/wrapping_sprite.h"
 #include <cmath>
+#include <format>
 #include <print>
 #include <vector>
 
 Ship::Ship(TextureManager &tm, std::string const &name)
     : WrappingSprite(tm, name), tm{tm} {
     sprites.emplace_back(*texture);
+    alt_texture = tm.getTexture(std::format("{}-booster", name));
     centerSprite(sprites[0]);
 }
 
 void Ship::setPosition(sf::Vector2f const &pos) {
-    if (sprites.size() > 0) {
+    if (!sprites.empty()) {
         sprites[0].setPosition(pos);
     }
 }
@@ -31,14 +33,17 @@ void Ship::draw(sf::RenderTarget &target, sf::RenderStates states) const {
 }
 
 void Ship::increaseVelocity(sf::Time t) {
-    if (!(sprites.size() > 0)) {
+    if (sprites.empty()) {
         return;
     }
+
+    is_boosting = true;
 
     // by default the angle is 0 so the sprite is pointed to the right
     // at start
     // we adjust it by subtracting 90 degrees, so that it is pointing
     // to the top
+    // TODO: Refactor
     float angle = (sprites[0].getRotation() - 90) * (std::numbers::pi / 180);
     float secs = t.asSeconds();
 
@@ -62,7 +67,7 @@ sf::Vector3f Ship::sunForceParams(sf::Vector2f const &window_size) {
 }
 
 void Ship::shoot() {
-    if (sprites.size() < 1 || cooldown > 0) {
+    if (sprites.empty() || cooldown > 0) {
         return;
     }
 
@@ -92,8 +97,14 @@ void Ship::updateProjectiles(sf::Time t, sf::Vector2f window_size) {
 }
 
 void Ship::update(sf::Time t, sf::Vector2f const &window_size) {
-    if (!(sprites.size() > 0)) {
+    if (sprites.empty()) {
         return;
+    }
+
+    if (is_boosting) {
+        sprites.front().setTexture(*alt_texture);
+    } else {
+        sprites.front().setTexture(*texture);
     }
 
     auto oldPos = sprites[0].getPosition();
@@ -116,6 +127,9 @@ void Ship::update(sf::Time t, sf::Vector2f const &window_size) {
     updateProjectiles(t, window_size);
 
     wrapIfNecessary(window_size);
+
+    // reset it each frame
+    is_boosting = false;
 }
 
 void Ship::rotate(RotateDirection r, sf::Time t) {
