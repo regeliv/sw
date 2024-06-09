@@ -3,6 +3,7 @@
 #include "SFML/System/Vector2.hpp"
 #include "SFML/System/Vector3.hpp"
 #include "src/lib/projectile.h"
+#include "src/lib/projectile_vector.h"
 #include "src/lib/sun.h"
 #include "src/lib/texture_manager.h"
 #include "src/lib/wrapping_sprite.h"
@@ -18,51 +19,43 @@ enum RotateDirection {
 };
 
 enum class ShipState {
-  alive,
-  boosting,
-  destroyed,
-  obliterated,
+    alive,
+    boosting,
+    destroyed,
+    obliterated,
 };
 
 class Ship : public WrappingSprite {
   public:
-    Ship(TextureManager &tm, std::string const&name);
-
-    std::vector<Projectile> const& getProjectiles() const;
+    Ship(TextureManager &tm, std::string const &name);
 
     void setPosition(sf::Vector2f const &pos, float angle);
 
     void update(sf::Time t, sf::Vector2f const &window_size);
     void increaseVelocity(sf::Time t);
     void rotate(RotateDirection r, sf::Time t);
-    void shoot();
+    std::optional<Projectile> shoot(TextureManager &tm);
 
     void destroyBySun();
     void destroy();
 
     void draw(sf::RenderTarget &target, sf::RenderStates states) const;
 
-    bool hitBy(Ship const& ship) const;
-    bool inSun(Sun const& sun) const;
-    bool collided(Ship const& ship) const;
+    bool hitBy(ProjectileVector const &pv) const;
+    bool inSun(Sun const &sun) const;
+    bool collided(Ship const &ship) const;
 
   private:
     std::string name;
-    ShipState ship_state;
-    
-    std::vector<Projectile> projectiles{};
+    ShipState ship_state{ShipState::alive};
 
     sf::Vector3f sunForceParams(sf::Vector2f const &window_size);
-    void updateProjectiles(sf::Time t, sf::Vector2f);
 
-    void updateTextures(sf::Texture const& t);
-    float cooldown = 0; 
+    void updateTextures(sf::Texture const &t);
+    float cooldown = 0;
 
     sf::Vector2f velocity;
 
     std::shared_ptr<sf::Texture> alt_texture;
     std::shared_ptr<sf::Texture> destroyed_texture;
-
-    TextureManager &tm;
-
 };

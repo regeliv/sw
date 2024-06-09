@@ -1,5 +1,7 @@
 #pragma once
 #include "player_ship.h"
+#include "src/lib/projectile.h"
+#include "src/lib/projectile_vector.h"
 #include "star.h"
 #include "sun.h"
 #include "window.h"
@@ -29,6 +31,9 @@ class Game {
 
     Ship needle;
     Ship wedge;
+    ProjectileVector needle_projectiles;
+    ProjectileVector wedge_projectiles;
+    
     Sun sun;
     std::vector<Star> stars;
 

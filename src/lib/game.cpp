@@ -41,7 +41,7 @@ void Game::handleInput() {
         needle.increaseVelocity(elapsed);
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-        needle.shoot();
+        needle_projectiles.addProjectile(needle.shoot(tm));
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
         needle.rotate(RotateDirection::counterclockwise, elapsed);
@@ -53,7 +53,7 @@ void Game::handleInput() {
         wedge.increaseVelocity(elapsed);
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-        wedge.shoot();
+        wedge_projectiles.addProjectile(wedge.shoot(tm));
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
         wedge.rotate(RotateDirection::counterclockwise, elapsed);
@@ -72,6 +72,9 @@ void Game::update() {
     auto window_size = window.getViewSize();
     needle.update(elapsed, window_size);
     wedge.update(elapsed, window_size);
+    needle_projectiles.updateProjectiles(elapsed.asSeconds(), window_size);
+    wedge_projectiles.updateProjectiles(elapsed.asSeconds(), window_size);
+
 
     sun.rotate(elapsed);
     for (Star &star : stars) {
@@ -91,24 +94,26 @@ void Game::render() {
 
     window.draw(needle);
     window.draw(wedge);
+    window.draw(needle_projectiles);
+    window.draw(wedge_projectiles);
 
     window.endDraw();
 }
 
 void Game::handleCollisions() {
     auto needle_sprites = needle.getSprites();
-    auto needle_projectiles = needle.getProjectiles();
+    // auto needle_projectiles = needle.getProjectiles();
 
     auto wedge_sprites = wedge.getSprites();
-    auto wedge_projectiles = wedge.getProjectiles();
+    // auto wedge_projectiles = wedge.getProjectiles();
 
     auto sun_sprite = sun.getSprite();
 
-    if (wedge.hitBy(needle)) {
+    if (wedge.hitBy(needle_projectiles)) {
         wedge.destroy();
     }
 
-    if (needle.hitBy(wedge)) {
+    if (needle.hitBy(wedge_projectiles)) {
         needle.destroy();
     }
 

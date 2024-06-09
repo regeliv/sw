@@ -1,22 +1,27 @@
+#include "src/lib/player_ship.h"
 #include "SFML/Graphics/RenderTarget.hpp"
 #include "SFML/System/Vector2.hpp"
 #include "SFML/System/Vector3.hpp"
-#include "src/lib/player_ship.h"
-#include "src/lib/sprite_utils.h"
 #include "src/lib/projectile.h"
+#include "src/lib/sprite_utils.h"
 #include "src/lib/texture_manager.h"
 #include "src/lib/wrapping_sprite.h"
 #include <cmath>
 #include <format>
+#include <optional>
 #include <print>
 #include <vector>
 
 Ship::Ship(TextureManager &tm, std::string const &name)
-    : WrappingSprite(tm, name), name{name}, tm{tm} {
+    : WrappingSprite(tm, name), name{name} {
+
     sprites.emplace_back(*texture);
     alt_texture = tm.getTexture(std::format("{}-booster", name));
     destroyed_texture = tm.getTexture(std::format("{}-destroyed", name));
+
     centerSprite(sprites[0]);
+
+    
 }
 
 void Ship::setPosition(sf::Vector2f const &pos, float angle) {
@@ -28,14 +33,6 @@ void Ship::setPosition(sf::Vector2f const &pos, float angle) {
 
 void Ship::draw(sf::RenderTarget &target, sf::RenderStates states) const {
     WrappingSprite::draw(target, states);
-
-    for (auto const &projectile : projectiles) {
-        target.draw(projectile);
-    }
-}
-
-std::vector<Projectile> const &Ship::getProjectiles() const {
-    return projectiles;
 }
 
 void Ship::increaseVelocity(sf::Time t) {
@@ -72,34 +69,24 @@ sf::Vector3f Ship::sunForceParams(sf::Vector2f const &window_size) {
     return sf::Vector3f{hypot, cosine, sine};
 }
 
-void Ship::shoot() {
+std::optional<Projectile> Ship::shoot(TextureManager &tm) {
     if (sprites.empty() || cooldown > 0 || ship_state == ShipState::destroyed) {
-        return;
+        return std::nullopt;
     }
 
-    sf::Vector2f proj_coords = sprites[0].getPosition();
-    float dist_from_center = sprites[0].getTextureRect().height / 2.0;
-    float angle = (sprites[0].getRotation() - 90) * (std::numbers::pi / 180);
+    sf::Vector2f proj_coords = sprites.front().getPosition();
+    float dist_from_center = sprites.front().getTextureRect().height / 2.0;
+    float angle =
+        (sprites.front().getRotation() - 90) * (std::numbers::pi / 180);
 
     proj_coords.x += std::cos(angle) * dist_from_center;
     proj_coords.y += std::sin(angle) * dist_from_center;
 
-    projectiles.push_back(Projectile(
+    cooldown = 1;
+    return Projectile(
         tm,
         {velocity.x + 40 * std::cos(angle), velocity.y + 40 * std::sin(angle)},
-        proj_coords, sprites[0].getRotation()));
-    cooldown = 1;
-}
-
-void Ship::updateProjectiles(sf::Time t, sf::Vector2f window_size) {
-    std::erase_if(projectiles,
-                  [&](Projectile &p) { return p.lifetimeEnded(); });
-
-    for (auto &projectile : projectiles) {
-        projectile.update(t, window_size);
-    }
-
-    cooldown -= t.asSeconds();
+        proj_coords, sprites[0].getRotation());
 }
 
 void Ship::updateTextures(sf::Texture const &t) {
@@ -131,6 +118,8 @@ void Ship::update(sf::Time t, sf::Vector2f const &window_size) {
     auto oldPos = sprites[0].getPosition();
 
     float secs = t.asSeconds();
+    cooldown -= secs;
+
     sf::Vector2f delta{velocity.x * secs, velocity.y * secs};
 
     sf::Vector3f force_params = sunForceParams(window_size);
@@ -145,8 +134,6 @@ void Ship::update(sf::Time t, sf::Vector2f const &window_size) {
     newPos.y = wrap(newPos.y, 0, window_size.y);
     sprites[0].setPosition(newPos);
 
-    updateProjectiles(t, window_size);
-
     wrapIfNecessary(window_size);
 }
 
@@ -157,16 +144,15 @@ void Ship::rotate(RotateDirection r, sf::Time t) {
 
     float delta = r * 90 * t.asSeconds();
 
-    for (auto & sprite : sprites) {
+    for (auto &sprite : sprites) {
         sprite.rotate(delta);
     }
 }
 
-bool Ship::hitBy(Ship const &ship) const {
-    auto &projectiles = ship.getProjectiles();
+bool Ship::hitBy(ProjectileVector const &pv) const {
 
     for (auto const &sprite : sprites) {
-        for (auto const &projectile : projectiles) {
+        for (auto const &projectile : pv.getProjectiles()) {
             for (auto const &projectile_sprite : projectile.getSprites()) {
                 if (projectile_sprite.getGlobalBounds().intersects(
                         sprite.getGlobalBounds())) {

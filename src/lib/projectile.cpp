@@ -2,6 +2,7 @@
 #include "SFML/System/Vector2.hpp"
 #include "sprite_utils.h"
 #include "src/lib/texture_manager.h"
+#include <print>
 
 Projectile::Projectile(TextureManager &tm, sf::Vector2f velocity,
                        sf::Vector2f pos, float angle)
@@ -13,8 +14,7 @@ Projectile::Projectile(TextureManager &tm, sf::Vector2f velocity,
     sprites[0].setRotation(angle);
 }
 
-void Projectile::move(sf::Time t, sf::Vector2f const &window_size) {
-    float secs = t.asSeconds();
+void Projectile::move(float secs, sf::Vector2f const &window_size) {
     sf::Vector2f delta{velocity.x * secs, velocity.y * secs};
 
     sf::Vector2f old_pos = sprites[0].getPosition();
@@ -28,9 +28,9 @@ bool Projectile::lifetimeEnded() {
     return lifetime <= 0;
 }
 
-void Projectile::update(sf::Time t, sf::Vector2f const &window_size) {
-    move(t, window_size);
+void Projectile::update(float secs, sf::Vector2f const &window_size) {
+    move(secs, window_size);
     wrapIfNecessary(window_size);
 
-    lifetime -= t.asSeconds();
+    lifetime -= secs;
 }
