@@ -1,8 +1,8 @@
-#include "player_ship.h"
 #include "SFML/Graphics/RenderTarget.hpp"
 #include "SFML/System/Vector2.hpp"
 #include "SFML/System/Vector3.hpp"
-#include "sprite_utils.h"
+#include "src/lib/player_ship.h"
+#include "src/lib/sprite_utils.h"
 #include "src/lib/projectile.h"
 #include "src/lib/texture_manager.h"
 #include "src/lib/wrapping_sprite.h"
@@ -12,9 +12,10 @@
 #include <vector>
 
 Ship::Ship(TextureManager &tm, std::string const &name)
-    : WrappingSprite(tm, name), tm{tm} {
+    : WrappingSprite(tm, name), name{name}, tm{tm} {
     sprites.emplace_back(*texture);
     alt_texture = tm.getTexture(std::format("{}-booster", name));
+    destroyed_texture = tm.getTexture(std::format("{}-destroyed", name));
     centerSprite(sprites[0]);
 }
 
@@ -38,11 +39,11 @@ std::vector<Projectile> const &Ship::getProjectiles() const {
 }
 
 void Ship::increaseVelocity(sf::Time t) {
-    if (sprites.empty()) {
+    if (sprites.empty() || ship_state == ShipState::destroyed) {
         return;
     }
 
-    is_boosting = true;
+    ship_state = ShipState::boosting;
 
     // by default the angle is 0 so the sprite is pointed to the right
     // at start
@@ -72,7 +73,7 @@ sf::Vector3f Ship::sunForceParams(sf::Vector2f const &window_size) {
 }
 
 void Ship::shoot() {
-    if (sprites.empty() || cooldown > 0) {
+    if (sprites.empty() || cooldown > 0 || ship_state == ShipState::destroyed) {
         return;
     }
 
@@ -101,15 +102,30 @@ void Ship::updateProjectiles(sf::Time t, sf::Vector2f window_size) {
     cooldown -= t.asSeconds();
 }
 
+void Ship::updateTextures(sf::Texture const &t) {
+    for (auto &sprite : sprites) {
+        sprite.setTexture(t);
+    }
+}
+
 void Ship::update(sf::Time t, sf::Vector2f const &window_size) {
     if (sprites.empty()) {
         return;
     }
 
-    if (is_boosting) {
-        sprites.front().setTexture(*alt_texture);
-    } else {
-        sprites.front().setTexture(*texture);
+    switch (ship_state) {
+    case ShipState::alive:
+        updateTextures(*texture);
+        break;
+    case ShipState::boosting:
+        updateTextures(*alt_texture);
+        ship_state = ShipState::alive;
+        break;
+    case ShipState::destroyed:
+        updateTextures(*destroyed_texture);
+        break;
+    default:
+        return;
     }
 
     auto oldPos = sprites[0].getPosition();
@@ -132,20 +148,17 @@ void Ship::update(sf::Time t, sf::Vector2f const &window_size) {
     updateProjectiles(t, window_size);
 
     wrapIfNecessary(window_size);
-
-    // reset it each frame
-    is_boosting = false;
 }
 
 void Ship::rotate(RotateDirection r, sf::Time t) {
-    if (!(sprites.size() > 0)) {
+    if (sprites.empty() || ship_state == ShipState::destroyed) {
         return;
     }
 
-    sprites[0].rotate(r * 90 * t.asSeconds());
+    float delta = r * 90 * t.asSeconds();
 
-    if (sprites.size() > 1) {
-        sprites[1].setRotation(sprites[0].getRotation());
+    for (auto & sprite : sprites) {
+        sprite.rotate(delta);
     }
 }
 
@@ -189,3 +202,7 @@ bool Ship::collided(Ship const &ship) const {
 
     return false;
 }
+
+void Ship::destroy() { ship_state = ShipState::destroyed; }
+
+void Ship::destroyBySun() { std::println("Destroying ship {} by Sun!", name); }

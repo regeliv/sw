@@ -1,4 +1,4 @@
-#include "window.h"
+#include "src/lib/window.h"
 #include "SFML/Graphics/Drawable.hpp"
 #include "SFML/System/Vector2.hpp"
 #include "SFML/Window/Event.hpp"
@@ -17,6 +17,7 @@ void Window::create() {
     auto style = is_fullscreen ? sf::Style::Fullscreen : sf::Style::Default;
     window.create(sf::VideoMode{window_size.x, window_size.y}, window_title,
                   style);
+
 }
 
 void Window::destroy() { window.close(); }
@@ -42,6 +43,8 @@ void Window::update() {
             }
             break;
         case sf::Event::Resized:
+            break;
+        default:
             break;
         }
     }

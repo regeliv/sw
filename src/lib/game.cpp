@@ -33,6 +33,10 @@ Game::Game()
 Game::~Game() {}
 
 void Game::handleInput() {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::B)) {
+        needle.destroy();
+    }
+
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
         needle.increaseVelocity(elapsed);
 
@@ -101,23 +105,24 @@ void Game::handleCollisions() {
     auto sun_sprite = sun.getSprite();
 
     if (wedge.hitBy(needle)) {
-        std::println("Wedge hit by needle!");
+        wedge.destroy();
     }
 
     if (needle.hitBy(wedge)) {
-        std::println("Needle hit by wedge!");
+        needle.destroy();
     }
 
     if (needle.inSun(sun)) {
-        std::println("Needle in sun");
+        needle.destroyBySun();
     }
 
     if (wedge.inSun(sun)) {
-        std::println("Wedge in sun");
+        wedge.destroyBySun();
     }
 
     if (needle.collided(wedge)) {
-        std::println("Collided!");
+        needle.destroy();
+        wedge.destroy();
     }
 
 }

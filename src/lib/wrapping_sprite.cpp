@@ -22,7 +22,7 @@ int WrappingSprite::overflowing(sf::Vector2f const &window_size) {
         return 0;
     }
 
-    sf::Sprite &main_sprite = sprites[0];
+    sf::Sprite &main_sprite = sprites.front();
 
     sf::Vector2f center = main_sprite.getPosition();
     sf::Vector2u text_rect = main_sprite.getTexture()->getSize();
@@ -86,7 +86,11 @@ void WrappingSprite::wrapIfNecessary(sf::Vector2f const &window_size) {
 }
 
 void WrappingSprite::addTexture(sf::Vector2f const &pos) {
-    sprites.emplace_back(*texture);
+    if (sprites.empty()) {
+        return;
+    }
+
+    sprites.emplace_back(*sprites.front().getTexture());
     centerSprite(sprites[1]);
     sprites[1].setPosition(pos);
     sprites[1].setRotation(sprites[0].getRotation());

@@ -17,9 +17,16 @@ enum RotateDirection {
     counterclockwise = -1,
 };
 
+enum class ShipState {
+  alive,
+  boosting,
+  destroyed,
+  obliterated,
+};
+
 class Ship : public WrappingSprite {
   public:
-    Ship(TextureManager &tm, std::string const &filename);
+    Ship(TextureManager &tm, std::string const&name);
 
     std::vector<Projectile> const& getProjectiles() const;
 
@@ -30,7 +37,7 @@ class Ship : public WrappingSprite {
     void rotate(RotateDirection r, sf::Time t);
     void shoot();
 
-    void destroyFromSun();
+    void destroyBySun();
     void destroy();
 
     void draw(sf::RenderTarget &target, sf::RenderStates states) const;
@@ -40,16 +47,21 @@ class Ship : public WrappingSprite {
     bool collided(Ship const& ship) const;
 
   private:
+    std::string name;
+    ShipState ship_state;
+    
     std::vector<Projectile> projectiles{};
 
     sf::Vector3f sunForceParams(sf::Vector2f const &window_size);
     void updateProjectiles(sf::Time t, sf::Vector2f);
+
+    void updateTextures(sf::Texture const& t);
     float cooldown = 0; 
 
     sf::Vector2f velocity;
 
     std::shared_ptr<sf::Texture> alt_texture;
-    bool is_boosting;
+    std::shared_ptr<sf::Texture> destroyed_texture;
 
     TextureManager &tm;
 
