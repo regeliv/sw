@@ -7,11 +7,6 @@
 #include "src/lib/texture_manager.h"
 #include "src/lib/wrapping_sprite.h"
 
-enum class Direction {
-    up,
-    down,
-};
-
 enum RotateDirection {
     clockwise = 1,
     counterclockwise = -1,

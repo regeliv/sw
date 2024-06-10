@@ -35,7 +35,8 @@ void Ship::draw(sf::RenderTarget &target, sf::RenderStates states) const {
 }
 
 void Ship::increaseVelocity(sf::Time t) {
-    if (sprites.empty() || ship_state == ShipState::destroyed) {
+    if (ship_state == ShipState::obliterated ||
+        ship_state == ShipState::destroyed) {
         return;
     }
 
@@ -66,7 +67,7 @@ sf::Vector2f Ship::sunVelocityDelta(sf::Vector2f const &window_size) {
 std::optional<Projectile> Ship::shoot(TextureManager &tm) {
     constexpr float projectile_velocity = 40;
 
-    if (sprites.empty() || shooting_cooldown > 0 ||
+    if (shooting_cooldown > 0 || ship_state == ShipState::obliterated ||
         ship_state == ShipState::destroyed) {
         return std::nullopt;
     }
@@ -92,9 +93,7 @@ void Ship::updateTextures(sf::Texture const &t) {
 }
 
 void Ship::update(sf::Time t, sf::Vector2f const &window_size) {
-    if (sprites.empty()) {
-        return;
-    }
+    float secs = t.asSeconds();
 
     switch (ship_state) {
     case ShipState::alive:
@@ -106,12 +105,19 @@ void Ship::update(sf::Time t, sf::Vector2f const &window_size) {
         break;
     case ShipState::destroyed:
         updateTextures(*destroyed_texture);
+        respawn_cooldown -= secs;
+        if (respawn_cooldown <= 0) {
+            reset();
+        }
         break;
-    default:
+    case ShipState::obliterated:
+        respawn_cooldown -= secs;
+        if (respawn_cooldown <= 0) {
+            reset();
+        }
         return;
     }
 
-    float secs = t.asSeconds();
     shooting_cooldown -= secs;
 
     sf::Vector2f old_pos = sprites.front().getPosition();
@@ -129,11 +135,14 @@ void Ship::update(sf::Time t, sf::Vector2f const &window_size) {
 }
 
 void Ship::rotate(RotateDirection r, sf::Time t) {
-    if (sprites.empty() || ship_state == ShipState::destroyed) {
+    if (ship_state == ShipState::obliterated ||
+        ship_state == ShipState::destroyed) {
         return;
     }
 
-    float delta = r * 90 * t.asSeconds();
+    constexpr float degrees_per_second = 90;
+
+    float delta = static_cast<float>(r) * degrees_per_second * t.asSeconds();
 
     for (auto &sprite : sprites) {
         sprite.rotate(delta);
@@ -181,7 +190,10 @@ bool Ship::collided(Ship const &ship) const {
 
 void Ship::destroy() { ship_state = ShipState::destroyed; }
 
-void Ship::destroyBySun() { std::println("Destroying ship {} by Sun!", name); }
+void Ship::destroyBySun() {
+    ship_state = ShipState::obliterated;
+    sprites.clear();
+}
 
 float Ship::getAngle() {
     // by default the angle is 0 so the sprite is pointed to the right
@@ -195,9 +207,11 @@ void Ship::reset() {
     sprites.clear();
     sprites.emplace_back(*texture);
     centerSprite(sprites.front());
+    ship_state = ShipState::alive;
 
     velocity = {0, 0};
     shooting_cooldown = 0;
+    respawn_cooldown = 3;
 
     setPosition(start_pos, start_angle);
 }
