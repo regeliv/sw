@@ -6,12 +6,11 @@
 
 Game::Game()
     : tm{"resources"}, window{"Spacewar!", sf::Vector2u(800, 600)},
-      needle{tm, "needle"}, wedge{tm, "wedge"}, sun{"resources/sun.png"} {
+      needle{tm, "needle"}, wedge{tm, "wedge"}, sun{tm} {
 
-    is_ok = true;
+    is_ok = tm.isOk();
 
-    if (!tm.isOk() || !sun.isOk()) {
-        is_ok = false;
+    if (!is_ok) {
         return;
     }
 

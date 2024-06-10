@@ -1,13 +1,9 @@
 #include "sun.h"
 #include "sprite_utils.h"
+#include "src/lib/texture_manager.h"
 
-Sun::Sun(std::string const &filename) {
-    is_ok = texture.loadFromFile(filename);
-    if (!is_ok) {
-        return;
-    }
-
-    sprite.setTexture(texture);
+Sun::Sun(TextureManager &tm) {
+    sprite.setTexture(*tm.getTexture("sun"));
     centerSprite(sprite);
 }
 

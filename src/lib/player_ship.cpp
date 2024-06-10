@@ -20,8 +20,6 @@ Ship::Ship(TextureManager &tm, std::string const &name)
     destroyed_texture = tm.getTexture(std::format("{}-destroyed", name));
 
     centerSprite(sprites[0]);
-
-    
 }
 
 void Ship::setPosition(sf::Vector2f const &pos, float angle) {
