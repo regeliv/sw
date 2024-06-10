@@ -1,3 +1,5 @@
 --- 
 BasedOnStyle: LLVM
 IndentWidth: 4
+BreakConstructorInitializers: BeforeComma
+BinPackParameters: true

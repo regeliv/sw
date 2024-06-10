@@ -1,7 +1,6 @@
 #pragma once
 #include "SFML/System/Time.hpp"
 #include "SFML/System/Vector2.hpp"
-#include "SFML/System/Vector3.hpp"
 #include "src/lib/projectile.h"
 #include "src/lib/projectile_vector.h"
 #include "src/lib/sun.h"
@@ -27,7 +26,9 @@ enum class ShipState {
 
 class Ship : public WrappingSprite {
   public:
-    Ship(TextureManager &tm, std::string const &name);
+    Ship();
+    Ship(TextureManager &tm, std::string const &name, sf::Vector2f start_pos,
+         float start_angle);
 
     void setPosition(sf::Vector2f const &pos, float angle);
 

@@ -11,21 +11,23 @@
 #include <print>
 #include <vector>
 
-Ship::Ship(TextureManager &tm, std::string const &name)
-    : WrappingSprite(tm, name), name{name} {
+Ship::Ship() {}
 
-    sprites.emplace_back(*texture);
-    alt_texture = tm.getTexture(std::format("{}-booster", name));
-    destroyed_texture = tm.getTexture(std::format("{}-destroyed", name));
+Ship::Ship(TextureManager &tm, std::string const &name, sf::Vector2f start_pos,
+           float start_angle)
+    : WrappingSprite(tm, name)
+    , name{name}
+    , start_pos{start_pos}
+    , start_angle{start_angle}
+    , alt_texture{tm.getTexture(std::format("{}-booster", name))}
+    , destroyed_texture{tm.getTexture(std::format("{}-destroyed", name))} {
 
-    centerSprite(sprites.front());
+    reset();
 }
 
 void Ship::setPosition(sf::Vector2f const &pos, float angle) {
-    if (!sprites.empty()) {
-        sprites.front().setPosition(pos);
-        sprites.front().setRotation(angle);
-    }
+    sprites.front().setPosition(pos);
+    sprites.front().setRotation(angle);
 }
 
 void Ship::draw(sf::RenderTarget &target, sf::RenderStates states) const {
@@ -53,13 +55,12 @@ sf::Vector2f Ship::sunVelocityDelta(sf::Vector2f const &window_size) {
     sf::Vector2f sun_pos{window_size.x / 2.f, window_size.y / 2.f};
     sf::Vector2f ship_pos = sprites.front().getPosition();
 
-    float r_squared = std::pow(sun_pos.x - ship_pos.x, 2) + std::pow(sun_pos.y - ship_pos.y, 2);
+    float r_squared = std::pow(sun_pos.x - ship_pos.x, 2) +
+                      std::pow(sun_pos.y - ship_pos.y, 2);
+
     float angle = std::atan2(sun_pos.y - ship_pos.y, sun_pos.x - ship_pos.x);
 
-    float v_delta_x = G / r_squared * std::cos(angle);
-    float v_delta_y = G / r_squared * std::sin(angle);
-
-    return {v_delta_x, v_delta_y};
+    return sf::Vector2f{std::cos(angle), std::sin(angle)} * (G / r_squared);
 }
 
 std::optional<Projectile> Ship::shoot(TextureManager &tm) {
@@ -188,4 +189,15 @@ float Ship::getAngle() {
     // we adjust it by subtracting 90 degrees, so that it is pointing
     // to the top
     return (sprites.front().getRotation() - 90) * (std::numbers::pi / 180);
+}
+
+void Ship::reset() {
+    sprites.clear();
+    sprites.emplace_back(*texture);
+    centerSprite(sprites.front());
+
+    velocity = {0, 0};
+    shooting_cooldown = 0;
+
+    setPosition(start_pos, start_angle);
 }

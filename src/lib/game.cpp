@@ -5,8 +5,9 @@
 #include <ranges>
 
 Game::Game()
-    : tm{"resources"}, window{"Spacewar!", sf::Vector2u(800, 600)},
-      needle{tm, "needle"}, wedge{tm, "wedge"}, sun{tm} {
+    : tm{"resources"}
+    , window{"Spacewar!", sf::Vector2u(800, 600)}
+    , sun{tm} {
 
     is_ok = tm.isOk();
 
@@ -24,6 +25,9 @@ Game::Game()
     sf::Vector2f lower_left(size.x * 0.25, size.y * 0.75);
     sf::Vector2f upper_right(size.x * 0.75, size.y * 0.25);
 
+    needle = Ship{tm, "needle", lower_left, 45.f};
+    wedge = Ship{tm, "wedge", upper_right, 225.f};
+
     sun.setPosition(center);
     needle.setPosition(lower_left, 45.f);
     wedge.setPosition(upper_right, 225.f);
@@ -33,7 +37,11 @@ Game::~Game() {}
 
 void Game::handleInput() {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::B)) {
-        needle.destroy();
+        needle.reset();
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::M)) {
+        wedge.reset();
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
@@ -74,7 +82,6 @@ void Game::update() {
     needle_projectiles.updateProjectiles(elapsed.asSeconds(), window_size);
     wedge_projectiles.updateProjectiles(elapsed.asSeconds(), window_size);
 
-
     sun.rotate(elapsed);
     for (Star &star : stars) {
         star.twinkle(elapsed);
@@ -101,10 +108,8 @@ void Game::render() {
 
 void Game::handleCollisions() {
     auto needle_sprites = needle.getSprites();
-    // auto needle_projectiles = needle.getProjectiles();
 
     auto wedge_sprites = wedge.getSprites();
-    // auto wedge_projectiles = wedge.getProjectiles();
 
     auto sun_sprite = sun.getSprite();
 
@@ -128,7 +133,6 @@ void Game::handleCollisions() {
         needle.destroy();
         wedge.destroy();
     }
-
 }
 
 sf::Time Game::getElapsed() { return elapsed; }

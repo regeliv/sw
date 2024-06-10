@@ -16,17 +16,19 @@ enum Edge {
 
 class WrappingSprite : public sf::Drawable {
   public:
-    WrappingSprite(TextureManager &tm, std::string const& texture_filename);
+    WrappingSprite();
+    WrappingSprite(TextureManager &tm, std::string const &texture_filename);
 
-    void cloneSpriteIfNecessary(sf::Vector2f const& window_size);
-    std::vector<sf::Sprite> const& getSprites() const;
+    void cloneSpriteIfNecessary(sf::Vector2f const &window_size);
+    std::vector<sf::Sprite> const &getSprites() const;
 
-    virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;    
+    virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const;
 
   protected:
-    int overflowing(sf::Vector2f const& window_size);
-    sf::Vector2f wrappedSpriteCoords(sf::Vector2f const& window_size, int overflowing_edges);
-    void addTexture(sf::Vector2f const& pos);
+    int overflowing(sf::Vector2f const &window_size);
+    sf::Vector2f wrappedSpriteCoords(sf::Vector2f const &window_size,
+                                     int overflowing_edges);
+    void addTexture(sf::Vector2f const &pos);
     std::vector<sf::Sprite> sprites;
     std::shared_ptr<sf::Texture> texture;
 };

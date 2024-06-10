@@ -4,11 +4,15 @@
 #include "sprite_utils.h"
 #include <cmath>
 
+WrappingSprite::WrappingSprite() {}
+
 WrappingSprite::WrappingSprite(TextureManager &tm,
                                std::string const &texture_name)
     : texture{tm.getTexture(texture_name)} {}
 
-std::vector<sf::Sprite> const &WrappingSprite::getSprites() const { return sprites; }
+std::vector<sf::Sprite> const &WrappingSprite::getSprites() const {
+    return sprites;
+}
 
 void WrappingSprite::draw(sf::RenderTarget &target,
                           sf::RenderStates states) const {
@@ -74,7 +78,7 @@ void WrappingSprite::cloneSpriteIfNecessary(sf::Vector2f const &window_size) {
         auto wrapped_coords =
             wrappedSpriteCoords(window_size, overflowing_edges);
 
-        if (sprites.size() == 2) {
+        if (sprites.size() < 2) {
             sprites[1].setPosition(wrapped_coords);
         } else {
             addTexture(wrapped_coords);
@@ -93,5 +97,5 @@ void WrappingSprite::addTexture(sf::Vector2f const &pos) {
     sprites.emplace_back(*sprites.front().getTexture());
     centerSprite(sprites[1]);
     sprites[1].setPosition(pos);
-    sprites[1].setRotation(sprites[0].getRotation());
+    sprites[1].setRotation(sprites.front().getRotation());
 }
