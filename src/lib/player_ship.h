@@ -22,7 +22,7 @@ enum class ShipState {
 class Ship : public WrappingSprite {
   public:
     Ship();
-    Ship(TextureManager &tm, std::string const &name, sf::Vector2f start_pos,
+    Ship(ResourceManager &tm, std::string const &name, sf::Vector2f start_pos,
          float start_angle);
 
     void setPosition(sf::Vector2f const &pos, float angle);
@@ -30,7 +30,7 @@ class Ship : public WrappingSprite {
     void update(sf::Time t, sf::Vector2f const &window_size);
     void increaseVelocity(sf::Time t);
     void rotate(RotateDirection r, sf::Time t);
-    std::optional<Projectile> shoot(TextureManager &tm);
+    std::optional<Projectile> shoot(ResourceManager &tm);
 
     void destroyBySun();
     void destroy();

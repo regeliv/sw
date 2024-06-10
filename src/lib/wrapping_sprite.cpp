@@ -6,7 +6,7 @@
 
 WrappingSprite::WrappingSprite() {}
 
-WrappingSprite::WrappingSprite(TextureManager &tm,
+WrappingSprite::WrappingSprite(ResourceManager &tm,
                                std::string const &texture_name)
     : texture{tm.getTexture(texture_name)} {}
 

@@ -13,7 +13,7 @@
 
 Ship::Ship() {}
 
-Ship::Ship(TextureManager &tm, std::string const &name, sf::Vector2f start_pos,
+Ship::Ship(ResourceManager &tm, std::string const &name, sf::Vector2f start_pos,
            float start_angle)
     : WrappingSprite(tm, name)
     , name{name}
@@ -64,7 +64,7 @@ sf::Vector2f Ship::sunVelocityDelta(sf::Vector2f const &window_size) {
     return sf::Vector2f{std::cos(angle), std::sin(angle)} * (G / r_squared);
 }
 
-std::optional<Projectile> Ship::shoot(TextureManager &tm) {
+std::optional<Projectile> Ship::shoot(ResourceManager &tm) {
     constexpr float projectile_velocity = 40;
 
     if (shooting_cooldown > 0 || ship_state == ShipState::obliterated ||

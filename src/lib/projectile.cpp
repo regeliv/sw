@@ -4,9 +4,10 @@
 #include "src/lib/texture_manager.h"
 #include <print>
 
-Projectile::Projectile(TextureManager &tm, sf::Vector2f velocity,
+Projectile::Projectile(ResourceManager &tm, sf::Vector2f velocity,
                        sf::Vector2f pos, float angle)
-    : WrappingSprite(tm, "projectile"), velocity{velocity} {
+    : WrappingSprite(tm, "projectile")
+    , velocity{velocity} {
 
     sprites.emplace_back(*texture);
     centerSprite(sprites.front());
@@ -27,9 +28,7 @@ void Projectile::move(float secs, sf::Vector2f const &window_size) {
     sprites.front().setPosition(new_pos);
 }
 
-bool Projectile::lifetimeEnded() {
-    return lifetime <= 0;
-}
+bool Projectile::lifetimeEnded() { return lifetime <= 0; }
 
 void Projectile::update(float secs, sf::Vector2f const &window_size) {
     move(secs, window_size);

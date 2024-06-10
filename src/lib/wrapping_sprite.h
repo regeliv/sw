@@ -17,7 +17,7 @@ enum Edge {
 class WrappingSprite : public sf::Drawable {
   public:
     WrappingSprite();
-    WrappingSprite(TextureManager &tm, std::string const &texture_filename);
+    WrappingSprite(ResourceManager &tm, std::string const &texture_filename);
 
     void cloneSpriteIfNecessary(sf::Vector2f const &window_size);
     std::vector<sf::Sprite> const &getSprites() const;

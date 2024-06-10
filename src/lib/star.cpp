@@ -7,7 +7,8 @@
 #include <print>
 #include <random>
 
-Star::Star(sf::Vector2u window_size, TextureManager &tm) : speed{2} {
+Star::Star(sf::Vector2u window_size, ResourceManager &tm)
+    : speed{2} {
     // ...
     std::random_device dev;
     std::mt19937 rng(dev());
@@ -54,7 +55,8 @@ float sineBetween(float x, float min, float max) {
 
 void Star::twinkle(sf::Time t) {
     time += t.asSeconds();
-    float brightness = sineBetween(time * speed, min_brightness, max_brightness);
+    float brightness =
+        sineBetween(time * speed, min_brightness, max_brightness);
     sprite.setColor(sf::Color(255, 255, 255, 255 * brightness));
 }
 

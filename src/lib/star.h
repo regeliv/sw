@@ -6,7 +6,7 @@
 
 class Star {
   public:
-    Star(sf::Vector2u window_size, TextureManager &tm);
+    Star(sf::Vector2u window_size, ResourceManager &tm);
 
     sf::Sprite const &getSprite() const;
 
