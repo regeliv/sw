@@ -45,17 +45,25 @@ class Ship : public WrappingSprite {
     bool inSun(Sun const &sun) const;
     bool collided(Ship const &ship) const;
 
+    void reset();
+
   private:
     std::string name;
     ShipState ship_state{ShipState::alive};
 
-    sf::Vector3f sunForceParams(sf::Vector2f const &window_size);
-
-    void updateTextures(sf::Texture const &t);
-    float cooldown = 0;
+    sf::Vector2f start_pos;
+    float start_angle;
+    float respawn_cooldown;
+    float shooting_cooldown = 0;
 
     sf::Vector2f velocity;
 
     std::shared_ptr<sf::Texture> alt_texture;
     std::shared_ptr<sf::Texture> destroyed_texture;
+
+    sf::Vector2f sunVelocityDelta(sf::Vector2f const &window_size);
+
+    void updateTextures(sf::Texture const &t);
+
+    float getAngle();
 };

@@ -1,7 +1,6 @@
 #include "src/lib/player_ship.h"
 #include "SFML/Graphics/RenderTarget.hpp"
 #include "SFML/System/Vector2.hpp"
-#include "SFML/System/Vector3.hpp"
 #include "src/lib/projectile.h"
 #include "src/lib/sprite_utils.h"
 #include "src/lib/texture_manager.h"
@@ -19,7 +18,7 @@ Ship::Ship(TextureManager &tm, std::string const &name)
     alt_texture = tm.getTexture(std::format("{}-booster", name));
     destroyed_texture = tm.getTexture(std::format("{}-destroyed", name));
 
-    centerSprite(sprites[0]);
+    centerSprite(sprites.front());
 }
 
 void Ship::setPosition(sf::Vector2f const &pos, float angle) {
@@ -39,52 +38,50 @@ void Ship::increaseVelocity(sf::Time t) {
     }
 
     ship_state = ShipState::boosting;
-
-    // by default the angle is 0 so the sprite is pointed to the right
-    // at start
-    // we adjust it by subtracting 90 degrees, so that it is pointing
-    // to the top
-    // TODO: Refactor
-    float angle = (sprites[0].getRotation() - 90) * (std::numbers::pi / 180);
+    float angle = getAngle();
     float secs = t.asSeconds();
 
-    constexpr int incr = 2;
+    constexpr float multiplier = 2;
 
-    velocity.x += incr * std::cos(angle) * secs;
-    velocity.y += incr * std::sin(angle) * secs;
+    velocity.x += multiplier * std::cos(angle) * secs;
+    velocity.y += multiplier * std::sin(angle) * secs;
 }
 
-sf::Vector3f Ship::sunForceParams(sf::Vector2f const &window_size) {
-    sf::Vector2f sun_pos{window_size.x / 2, window_size.y / 2};
-    sf::Vector2f ship_pos = sprites[0].getPosition();
+sf::Vector2f Ship::sunVelocityDelta(sf::Vector2f const &window_size) {
+    constexpr float G = 1e3;
 
-    float dist = hypot(sun_pos.x - ship_pos.x, sun_pos.y - ship_pos.y);
+    sf::Vector2f sun_pos{window_size.x / 2.f, window_size.y / 2.f};
+    sf::Vector2f ship_pos = sprites.front().getPosition();
 
-    float hypot = dist * dist;
-    float cosine = (sun_pos.x - ship_pos.x) / hypot;
-    float sine = (sun_pos.y - ship_pos.y) / hypot;
+    float r_squared = std::pow(sun_pos.x - ship_pos.x, 2) + std::pow(sun_pos.y - ship_pos.y, 2);
+    float angle = std::atan2(sun_pos.y - ship_pos.y, sun_pos.x - ship_pos.x);
 
-    return sf::Vector3f{hypot, cosine, sine};
+    float v_delta_x = G / r_squared * std::cos(angle);
+    float v_delta_y = G / r_squared * std::sin(angle);
+
+    return {v_delta_x, v_delta_y};
 }
 
 std::optional<Projectile> Ship::shoot(TextureManager &tm) {
-    if (sprites.empty() || cooldown > 0 || ship_state == ShipState::destroyed) {
+    constexpr float projectile_velocity = 40;
+
+    if (sprites.empty() || shooting_cooldown > 0 ||
+        ship_state == ShipState::destroyed) {
         return std::nullopt;
     }
 
     sf::Vector2f proj_coords = sprites.front().getPosition();
     float dist_from_center = sprites.front().getTextureRect().height / 2.0;
-    float angle =
-        (sprites.front().getRotation() - 90) * (std::numbers::pi / 180);
 
-    proj_coords.x += std::cos(angle) * dist_from_center;
-    proj_coords.y += std::sin(angle) * dist_from_center;
+    float angle = getAngle();
+    proj_coords +=
+        sf::Vector2f(std::cos(angle), std::sin(angle)) * dist_from_center;
 
-    cooldown = 1;
-    return Projectile(
-        tm,
-        {velocity.x + 40 * std::cos(angle), velocity.y + 40 * std::sin(angle)},
-        proj_coords, sprites[0].getRotation());
+    shooting_cooldown = 1;
+    return Projectile(tm,
+                      {velocity.x + projectile_velocity * std::cos(angle),
+                       velocity.y + projectile_velocity * std::sin(angle)},
+                      proj_coords, sprites.front().getRotation());
 }
 
 void Ship::updateTextures(sf::Texture const &t) {
@@ -113,26 +110,21 @@ void Ship::update(sf::Time t, sf::Vector2f const &window_size) {
         return;
     }
 
-    auto oldPos = sprites[0].getPosition();
-
     float secs = t.asSeconds();
-    cooldown -= secs;
+    shooting_cooldown -= secs;
 
-    sf::Vector2f delta{velocity.x * secs, velocity.y * secs};
+    sf::Vector2f old_pos = sprites.front().getPosition();
+    sf::Vector2f pos_delta{velocity.x * secs, velocity.y * secs};
 
-    sf::Vector3f force_params = sunForceParams(window_size);
+    velocity += sunVelocityDelta(window_size);
 
-    // TODO: Extract into method
-    constexpr float G = 50000;
-    velocity.x += G / force_params.x * force_params.y;
-    velocity.y += G / force_params.x * force_params.z;
+    sf::Vector2f newPos = old_pos + pos_delta;
 
-    sf::Vector2f newPos{oldPos.x + delta.x, oldPos.y + delta.y};
     newPos.x = wrap(newPos.x, 0, window_size.x);
     newPos.y = wrap(newPos.y, 0, window_size.y);
-    sprites[0].setPosition(newPos);
+    sprites.front().setPosition(newPos);
 
-    wrapIfNecessary(window_size);
+    cloneSpriteIfNecessary(window_size);
 }
 
 void Ship::rotate(RotateDirection r, sf::Time t) {
@@ -148,7 +140,6 @@ void Ship::rotate(RotateDirection r, sf::Time t) {
 }
 
 bool Ship::hitBy(ProjectileVector const &pv) const {
-
     for (auto const &sprite : sprites) {
         for (auto const &projectile : pv.getProjectiles()) {
             for (auto const &projectile_sprite : projectile.getSprites()) {
@@ -190,3 +181,11 @@ bool Ship::collided(Ship const &ship) const {
 void Ship::destroy() { ship_state = ShipState::destroyed; }
 
 void Ship::destroyBySun() { std::println("Destroying ship {} by Sun!", name); }
+
+float Ship::getAngle() {
+    // by default the angle is 0 so the sprite is pointed to the right
+    // at start
+    // we adjust it by subtracting 90 degrees, so that it is pointing
+    // to the top
+    return (sprites.front().getRotation() - 90) * (std::numbers::pi / 180);
+}

@@ -67,7 +67,7 @@ WrappingSprite::wrappedSpriteCoords(sf::Vector2f const &window_size,
     return sf::Vector2f(new_x, new_y);
 }
 
-void WrappingSprite::wrapIfNecessary(sf::Vector2f const &window_size) {
+void WrappingSprite::cloneSpriteIfNecessary(sf::Vector2f const &window_size) {
     int overflowing_edges = overflowing(window_size);
 
     if (overflowing_edges) {
