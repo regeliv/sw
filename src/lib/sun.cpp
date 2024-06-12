@@ -2,8 +2,8 @@
 #include "sprite_utils.h"
 #include "src/lib/texture_manager.h"
 
-Sun::Sun(ResourceManager &tm) {
-    sprite.setTexture(*tm.getTexture("sun"));
+Sun::Sun(ResourceManager &rm) {
+    sprite.setTexture(*rm.getTexture("sun"));
     centerSprite(sprite);
 }
 

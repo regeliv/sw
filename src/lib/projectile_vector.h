@@ -7,9 +7,10 @@ class ProjectileVector : public sf::Drawable {
     std::vector<Projectile> projectiles;
 
   public:
-    void updateProjectiles(float secs, sf::Vector2f window_size);
+    void updateProjectiles(float secs, sf::Vector2f window_size,
+                           Sun const &sun);
     void draw(sf::RenderTarget &target, sf::RenderStates states) const;
-    void addProjectile(std::optional<Projectile>&& projectile);
+    void addProjectile(std::optional<Projectile> &&projectile);
 
-    std::vector<Projectile> const& getProjectiles() const;
+    std::vector<Projectile> const &getProjectiles() const;
 };

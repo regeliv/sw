@@ -98,8 +98,8 @@ void Game::update() {
     auto window_size = window.getViewSize();
     needle.update(elapsed, window_size);
     wedge.update(elapsed, window_size);
-    needle_projectiles.updateProjectiles(elapsed.asSeconds(), window_size);
-    wedge_projectiles.updateProjectiles(elapsed.asSeconds(), window_size);
+    needle_projectiles.updateProjectiles(elapsed.asSeconds(), window_size, sun);
+    wedge_projectiles.updateProjectiles(elapsed.asSeconds(), window_size, sun);
 
     sun.rotate(elapsed);
     for (Star &star : stars) {

@@ -8,7 +8,7 @@
 
 class Sun {
   public:
-    Sun(ResourceManager &tm);
+    Sun(ResourceManager &rm);
 
     void rotate(sf::Time t);
     void setPosition(sf::Vector2f const &pos);

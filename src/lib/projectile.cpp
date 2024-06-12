@@ -36,3 +36,14 @@ void Projectile::update(float secs, sf::Vector2f const &window_size) {
 
     lifetime -= secs;
 }
+
+bool Projectile::inSun(Sun const &sun) {
+    auto sun_bounds = sun.getSprite().getGlobalBounds();
+    for (auto const &sprite : sprites) {
+        if (sun_bounds.intersects(sprite.getGlobalBounds())) {
+            return true;
+        }
+    }
+
+    return false;
+}

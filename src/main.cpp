@@ -1,10 +1,10 @@
+#include "src/lib/game.h"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <print>
-#include "src/lib/game.h"
 #define PROJECT_NAME "spacewar"
 
-int main(int argc, char **argv) {
+int main() {
     Game game{};
 
     if (!game.isOk()) {
