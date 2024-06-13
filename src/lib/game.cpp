@@ -146,11 +146,11 @@ void Game::handleCollisions() {
     }
 
     if (needle.inSun(sun)) {
-        needle.destroyBySun();
+        needle.destroy();
     }
 
     if (wedge.inSun(sun)) {
-        wedge.destroyBySun();
+        wedge.destroy();
     }
 
     if (needle.collided(wedge)) {

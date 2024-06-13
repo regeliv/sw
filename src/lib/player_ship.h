@@ -16,7 +16,6 @@ enum class ShipState {
     alive,
     boosting,
     destroyed,
-    obliterated,
 };
 
 class Ship : public WrappingSprite {
@@ -32,7 +31,6 @@ class Ship : public WrappingSprite {
     void rotate(RotateDirection r, sf::Time t);
     std::optional<Projectile> shoot(ResourceManager &tm);
 
-    void destroyBySun();
     void destroy();
 
     void draw(sf::RenderTarget &target, sf::RenderStates states) const;
@@ -55,7 +53,7 @@ class Ship : public WrappingSprite {
     sf::Vector2f velocity;
 
     std::shared_ptr<sf::Texture> alt_texture;
-    std::shared_ptr<sf::Texture> destroyed_texture;
+    std::vector<std::shared_ptr<sf::Texture>> destroyed_textures;
 
     sf::Vector2f sunVelocityDelta(sf::Vector2f const &window_size);
 

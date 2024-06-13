@@ -5,10 +5,13 @@
 #include "src/lib/sprite_utils.h"
 #include "src/lib/texture_manager.h"
 #include "src/lib/wrapping_sprite.h"
+#include <cassert>
 #include <cmath>
 #include <format>
 #include <optional>
+#include <ostream>
 #include <print>
+#include <ranges>
 #include <vector>
 
 Ship::Ship() {}
@@ -19,8 +22,12 @@ Ship::Ship(ResourceManager &tm, std::string const &name, sf::Vector2f start_pos,
     , name{name}
     , start_pos{start_pos}
     , start_angle{start_angle}
-    , alt_texture{tm.getTexture(std::format("{}-booster", name))}
-    , destroyed_texture{tm.getTexture(std::format("{}-destroyed", name))} {
+    , alt_texture{tm.getTexture(std::format("{}-booster", name))} {
+
+    for (int i : std::ranges::iota_view(1, 5)) {
+        destroyed_textures.push_back(
+            tm.getTexture(std::format("{}-{}", name, i)));
+    }
 
     reset();
 }
@@ -35,8 +42,7 @@ void Ship::draw(sf::RenderTarget &target, sf::RenderStates states) const {
 }
 
 void Ship::increaseVelocity(sf::Time t) {
-    if (ship_state == ShipState::obliterated ||
-        ship_state == ShipState::destroyed) {
+    if (ship_state == ShipState::destroyed) {
         return;
     }
 
@@ -51,24 +57,26 @@ void Ship::increaseVelocity(sf::Time t) {
 }
 
 sf::Vector2f Ship::sunVelocityDelta(sf::Vector2f const &window_size) {
-    constexpr float G = 1e3;
+    constexpr float G = 0.5e3;
 
     sf::Vector2f sun_pos{window_size.x / 2.f, window_size.y / 2.f};
     sf::Vector2f ship_pos = sprites.front().getPosition();
 
     float r_squared = std::pow(sun_pos.x - ship_pos.x, 2) +
-                      std::pow(sun_pos.y - ship_pos.y, 2);
+                      std::pow(sun_pos.y - ship_pos.y, 2) + 1e-3f;
 
     float angle = std::atan2(sun_pos.y - ship_pos.y, sun_pos.x - ship_pos.x);
 
-    return sf::Vector2f{std::cos(angle), std::sin(angle)} * (G / r_squared);
+    auto v_delta =
+        sf::Vector2f{std::cos(angle), std::sin(angle)} * (G / r_squared);
+
+    return v_delta;
 }
 
 std::optional<Projectile> Ship::shoot(ResourceManager &tm) {
     constexpr float projectile_velocity = 40;
 
-    if (shooting_cooldown > 0 || ship_state == ShipState::obliterated ||
-        ship_state == ShipState::destroyed) {
+    if (shooting_cooldown > 0 || ship_state == ShipState::destroyed) {
         return std::nullopt;
     }
 
@@ -104,18 +112,20 @@ void Ship::update(sf::Time t, sf::Vector2f const &window_size) {
         ship_state = ShipState::alive;
         break;
     case ShipState::destroyed:
-        updateTextures(*destroyed_texture);
         respawn_cooldown -= secs;
-        if (respawn_cooldown <= 0) {
-            reset();
+        if (respawn_cooldown > 2) {
+            float x = (3 - respawn_cooldown) * 4;
+            updateTextures(*destroyed_textures[(int)x]);
+        } else {
+            sprites.clear();
+
+            if (respawn_cooldown <= 0) {
+                reset();
+            } else {
+                return;
+            }
         }
         break;
-    case ShipState::obliterated:
-        respawn_cooldown -= secs;
-        if (respawn_cooldown <= 0) {
-            reset();
-        }
-        return;
     }
 
     shooting_cooldown -= secs;
@@ -135,8 +145,7 @@ void Ship::update(sf::Time t, sf::Vector2f const &window_size) {
 }
 
 void Ship::rotate(RotateDirection r, sf::Time t) {
-    if (ship_state == ShipState::obliterated ||
-        ship_state == ShipState::destroyed) {
+    if (ship_state == ShipState::destroyed) {
         return;
     }
 
@@ -188,11 +197,11 @@ bool Ship::collided(Ship const &ship) const {
     return false;
 }
 
-void Ship::destroy() { ship_state = ShipState::destroyed; }
-
-void Ship::destroyBySun() {
-    ship_state = ShipState::obliterated;
-    sprites.clear();
+void Ship::destroy() {
+    if (ship_state != ShipState::destroyed) {
+        ship_state = ShipState::destroyed;
+        // velocity *= 0.1f;
+    }
 }
 
 float Ship::getAngle() {

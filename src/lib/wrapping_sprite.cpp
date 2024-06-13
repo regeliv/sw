@@ -78,7 +78,7 @@ void WrappingSprite::cloneSpriteIfNecessary(sf::Vector2f const &window_size) {
         auto wrapped_coords =
             wrappedSpriteCoords(window_size, overflowing_edges);
 
-        if (sprites.size() < 2) {
+        if (sprites.size() >= 2) {
             sprites[1].setPosition(wrapped_coords);
         } else {
             addTexture(wrapped_coords);
