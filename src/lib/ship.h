@@ -28,6 +28,7 @@ class Ship : public WrappingSprite {
 
     void update(sf::Time t, sf::Vector2f const &window_size);
     void increaseVelocity(sf::Time t);
+
     void rotate(RotateDirection r, sf::Time t);
     std::optional<Projectile> shoot(ResourceManager &tm);
 
@@ -56,6 +57,7 @@ class Ship : public WrappingSprite {
 
     std::shared_ptr<sf::Texture> alt_texture;
     std::vector<std::shared_ptr<sf::Texture>> destroyed_textures;
+    std::size_t dt_index;
 
     sf::Vector2f sunVelocityDelta(sf::Vector2f const &window_size);
 

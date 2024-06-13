@@ -1,4 +1,5 @@
 #include "src/lib/ship.h"
+#include "SFML/Audio/Sound.hpp"
 #include "SFML/Graphics/RenderTarget.hpp"
 #include "SFML/System/Vector2.hpp"
 #include "src/lib/projectile.h"
@@ -63,7 +64,7 @@ sf::Vector2f Ship::sunVelocityDelta(sf::Vector2f const &window_size) {
     sf::Vector2f ship_pos = sprites.front().getPosition();
 
     float r_squared = std::pow(sun_pos.x - ship_pos.x, 2) +
-                      std::pow(sun_pos.y - ship_pos.y, 2) + 1e-3f;
+                      std::pow(sun_pos.y - ship_pos.y, 2) + 1e-3;
 
     float angle = std::atan2(sun_pos.y - ship_pos.y, sun_pos.x - ship_pos.x);
 
@@ -115,9 +116,21 @@ void Ship::update(sf::Time t, sf::Vector2f const &window_size) {
     case ShipState::destroyed:
         respawn_cooldown -= secs;
         if (respawn_cooldown > 2) {
-            float x = (3 - respawn_cooldown) * 4;
-            updateTextures(*destroyed_textures[(int)x]);
+            std::size_t new_index = (std::size_t)((3 - respawn_cooldown) * 4);
+
+            if (new_index != dt_index) {
+                velocity *= 0.75f;
+            }
+
+            if (new_index == 3 && dt_index == 2) {
+                explosion.play();
+            }
+            dt_index = new_index;
+
+            updateTextures(*destroyed_textures[dt_index]);
+
         } else {
+            velocity *= 0.f;
             sprites.clear();
 
             if (respawn_cooldown <= 0) {
@@ -201,7 +214,6 @@ bool Ship::collided(Ship const &ship) const {
 void Ship::destroy() {
     if (ship_state != ShipState::destroyed) {
         ship_state = ShipState::destroyed;
-        // velocity *= 0.1f;
     }
 }
 
