@@ -1,7 +1,7 @@
 #pragma once
 #include "SFML/System/Vector2.hpp"
 #include "src/lib/sun.h"
-#include "wrapping_sprite.h"
+#include "src/lib/wrapping_sprite.h"
 
 class Projectile : public WrappingSprite {
   public:

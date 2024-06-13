@@ -1,4 +1,4 @@
-#include "texture_manager.h"
+#include "src/lib/resource_manager.h"
 #include "SFML/Audio/SoundBuffer.hpp"
 #include <filesystem>
 #include <print>

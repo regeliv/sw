@@ -1,9 +1,9 @@
-#include "src/lib/player_ship.h"
+#include "src/lib/ship.h"
 #include "SFML/Graphics/RenderTarget.hpp"
 #include "SFML/System/Vector2.hpp"
 #include "src/lib/projectile.h"
+#include "src/lib/resource_manager.h"
 #include "src/lib/sprite_utils.h"
-#include "src/lib/texture_manager.h"
 #include "src/lib/wrapping_sprite.h"
 #include <cmath>
 #include <format>

@@ -1,7 +1,6 @@
-#include "projectile.h"
+#include "src/lib/projectile.h"
 #include "SFML/System/Vector2.hpp"
 #include "sprite_utils.h"
-#include "src/lib/texture_manager.h"
 #include <print>
 
 Projectile::Projectile(ResourceManager &tm, sf::Vector2f velocity,

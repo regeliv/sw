@@ -3,7 +3,7 @@
 #include "SFML/Graphics/Texture.hpp"
 #include "SFML/System/Time.hpp"
 #include "SFML/System/Vector2.hpp"
-#include "src/lib/texture_manager.h"
+#include "src/lib/resource_manager.h"
 #include <string>
 
 class Sun {

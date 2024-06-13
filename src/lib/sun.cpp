@@ -1,6 +1,5 @@
 #include "sun.h"
 #include "sprite_utils.h"
-#include "src/lib/texture_manager.h"
 
 Sun::Sun(ResourceManager &rm) {
     sprite.setTexture(*rm.getTexture("sun"));

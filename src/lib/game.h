@@ -1,6 +1,6 @@
 #pragma once
 #include "SFML/Graphics/Text.hpp"
-#include "player_ship.h"
+#include "ship.h"
 #include "src/lib/projectile_vector.h"
 #include "star.h"
 #include "sun.h"

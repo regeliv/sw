@@ -3,8 +3,8 @@
 #include "SFML/System/Vector2.hpp"
 #include "src/lib/projectile.h"
 #include "src/lib/projectile_vector.h"
+#include "src/lib/resource_manager.h"
 #include "src/lib/sun.h"
-#include "src/lib/texture_manager.h"
 #include "src/lib/wrapping_sprite.h"
 
 enum RotateDirection {

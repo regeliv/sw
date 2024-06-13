@@ -2,7 +2,7 @@
 #include "SFML/Graphics/Sprite.hpp"
 #include "SFML/System/Time.hpp"
 #include "SFML/System/Vector2.hpp"
-#include "texture_manager.h"
+#include "src/lib/resource_manager.h"
 
 class Star {
   public:

@@ -14,10 +14,10 @@ sfml_dep = sfml_proj.get_variable('sfml_dep')
 app_src = files('src/main.cpp')
 lib_src = files('src/lib/window.cpp',
                 'src/lib/game.cpp',
-                'src/lib/player_ship.cpp',
+                'src/lib/ship.cpp',
                 'src/lib/sun.cpp',
                 'src/lib/star.cpp',
-                'src/lib/texture_manager.cpp',
+                'src/lib/resource_manager.cpp',
                 'src/lib/sprite_utils.cpp',
                 'src/lib/wrapping_sprite.cpp',
                 'src/lib/projectile.cpp',

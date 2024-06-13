@@ -3,7 +3,7 @@
 #include "SFML/Graphics/Sprite.hpp"
 #include "SFML/Graphics/Texture.hpp"
 #include "SFML/System/Vector2.hpp"
-#include "src/lib/texture_manager.h"
+#include "src/lib/resource_manager.h"
 #include <memory>
 #include <vector>
 
