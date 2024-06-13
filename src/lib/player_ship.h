@@ -51,6 +51,8 @@ class Ship : public WrappingSprite {
     float shooting_cooldown = 0;
 
     sf::Vector2f velocity;
+    sf::Sound shot;
+    sf::Sound explosion;
 
     std::shared_ptr<sf::Texture> alt_texture;
     std::vector<std::shared_ptr<sf::Texture>> destroyed_textures;

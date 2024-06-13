@@ -1,17 +1,20 @@
 #include "texture_manager.h"
+#include "SFML/Audio/SoundBuffer.hpp"
 #include <filesystem>
 #include <print>
+#include <set>
 
 ResourceManager::ResourceManager(std::string const &resource_dir) {
     is_ok = true;
+    std::set<std::string> extensions{".png", ".otf", ".mp3", ".wav"};
+
     for (const auto &entry :
          std::filesystem::recursive_directory_iterator(resource_dir)) {
 
         auto path = entry.path();
         auto extension = path.extension().string();
 
-        if ((extension != ".png" && extension != ".otf") ||
-            entry.is_directory()) {
+        if (!extensions.contains(extension) || entry.is_directory()) {
             continue;
         }
 
@@ -24,6 +27,9 @@ ResourceManager::ResourceManager(std::string const &resource_dir) {
         } else if (extension == ".otf") {
             fonts[name] = std::make_shared<sf::Font>();
             is_ok = fonts[name]->loadFromFile(file);
+        } else if (extension == ".mp3" || extension == ".wav") {
+            sounds[name] = std::make_shared<sf::SoundBuffer>();
+            is_ok = sounds[name]->loadFromFile(file);
         }
 
         if (!is_ok) {
@@ -41,6 +47,11 @@ ResourceManager::getTexture(std::string const &name) const {
 std::shared_ptr<sf::Font>
 ResourceManager::getFont(std::string const &name) const {
     return fonts.at(name);
+}
+
+std::shared_ptr<sf::SoundBuffer>
+ResourceManager::getSound(std::string const &name) const {
+    return sounds.at(name);
 }
 
 bool ResourceManager::isOk() { return is_ok; }

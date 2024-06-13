@@ -5,28 +5,28 @@
 #include "src/lib/sprite_utils.h"
 #include "src/lib/texture_manager.h"
 #include "src/lib/wrapping_sprite.h"
-#include <cassert>
 #include <cmath>
 #include <format>
 #include <optional>
-#include <ostream>
 #include <print>
 #include <ranges>
 #include <vector>
 
 Ship::Ship() {}
 
-Ship::Ship(ResourceManager &tm, std::string const &name, sf::Vector2f start_pos,
+Ship::Ship(ResourceManager &rm, std::string const &name, sf::Vector2f start_pos,
            float start_angle)
-    : WrappingSprite(tm, name)
+    : WrappingSprite(rm, name)
     , name{name}
     , start_pos{start_pos}
     , start_angle{start_angle}
-    , alt_texture{tm.getTexture(std::format("{}-booster", name))} {
+    , shot{*rm.getSound("shot")}
+    , explosion{*rm.getSound("explosion")}
+    , alt_texture{rm.getTexture(std::format("{}-booster", name))} {
 
     for (int i : std::ranges::iota_view(1, 5)) {
         destroyed_textures.push_back(
-            tm.getTexture(std::format("{}-{}", name, i)));
+            rm.getTexture(std::format("{}-{}", name, i)));
     }
 
     reset();
@@ -88,6 +88,7 @@ std::optional<Projectile> Ship::shoot(ResourceManager &tm) {
         sf::Vector2f(std::cos(angle), std::sin(angle)) * dist_from_center;
 
     shooting_cooldown = 1;
+    shot.play();
     return Projectile(tm,
                       {velocity.x + projectile_velocity * std::cos(angle),
                        velocity.y + projectile_velocity * std::sin(angle)},
